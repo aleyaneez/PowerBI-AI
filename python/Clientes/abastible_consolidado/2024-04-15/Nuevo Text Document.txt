@@ -1,0 +1,5 @@
+- Agregar niveles de riesgo a las tablas
+- Truncar valores
+- Pasar ejemplos para generar mejores observaciones
+- En la pagina 5, como que solo vio hasta cierta parte
+- En los más riesgosos, falta poner un filtro de 'dev' 50
