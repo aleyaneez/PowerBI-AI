@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Variables de colores personalizados */
+:root {
+  --color-primary: hsl(233, 84%, 62%);
+  --color-secondary: hsl(200, 90%, 50%);
+  --color-accent: hsl(50, 100%, 60%);
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #F5F3F2;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Modo claro */
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #F5F3F2;
+  }
+}
+
+/* Clases reutilizables */
+.text-primary {
+  color: var(--color-primary);
+}
