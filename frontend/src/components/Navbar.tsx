@@ -1,16 +1,19 @@
 import { Link } from "react-router-dom";
-import LogoMigtra from "../assets/migtra.png";
+import LogoMigtra from "../assets/Capa-2.png";
 
 const Navbar = () => {
   return (
-    <nav className="p-4 text-white bg-transparent">
+    <nav className="p-8">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/">
-          <img src={LogoMigtra} alt="Migtra" className="w-48" />
+          <img src={LogoMigtra} alt="Migtra" />
         </Link>
-        <ul className="flex space-x-4 list-none">
+        <ul className="flex text-secondary font-medium space-x-8">
           <li>
-            <Link to="/" className="text-primary">Inicio</Link>
+            <Link to="/">Generar PDF</Link>
+          </li>
+          <li>
+            <Link to="/">Configuración</Link>
           </li>
         </ul>
       </div>

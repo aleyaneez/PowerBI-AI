@@ -1,25 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import 'tailwindcss';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Variables de colores personalizados */
 :root {
-  --color-primary: hsl(233, 84%, 62%);
-  --color-secondary: hsl(200, 90%, 50%);
+  --text-primary: hsl(213, 73%, 26%);
+  --text-secondary: hsl(202, 65%, 3%);
+  --text-tertiary: hsl(213, 36%, 58%);
   --color-accent: hsl(50, 100%, 60%);
 
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   line-height: 1.5;
-  font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #F5F3F2;
+  background-color: #f5f3f2;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+ul, li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 /* Modo claro */
@@ -32,5 +42,38 @@
 
 /* Clases reutilizables */
 .text-primary {
-  color: var(--color-primary);
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+
+.bg-primary {
+  background-color: var(--text-primary);
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  80% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-bounceIn {
+  animation: bounceIn 0.5s ease-out;
 }
