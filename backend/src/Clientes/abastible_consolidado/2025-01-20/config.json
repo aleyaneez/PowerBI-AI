@@ -1,0 +1,602 @@
+{
+    "Cliente": "abastible_consolidado",
+    "Replaces": {
+        "Oficina": {
+            "DISPONIBLES": "SANTIAGO",
+            "Disponibles": "Santiago"
+        }
+    },
+    "Graficos": [
+        {
+            "Pagina": "2",
+            "Tipo": "Evolucion",
+            "Filtros": [
+                {
+                    "startDate": "2024-01-29",
+                    "endDate": "2025-01-20"
+                }
+            ]
+        },
+        {
+            "Pagina": "3",
+            "Tipo": "Evolucion",
+            "Filtros": [
+                {
+                    "startDate": "2024-01-29",
+                    "endDate": "2025-01-20",
+                    "Flotas": [
+                        "ENVASADO",
+                        "GRANEL",
+                        "TRANSFERENCIA"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "4",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO",
+                        "GRANEL",
+                        "TRANSFERENCIA"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "5",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26"
+                }
+            ]
+        },
+        {
+            "Pagina": "6",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "ultimas": "2"
+                }
+            ]
+        },
+        {
+            "Pagina": "7",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "top": "60",
+                    "dev": 50
+                }
+            ]
+        },
+        {
+            "Pagina": "10",
+            "Tipo": "Evolucion",
+            "Filtros": [
+                {
+                    "startDate": "2024-01-29",
+                    "endDate": "2025-01-20",
+                    "Flotas": [
+                        "ENVASADO"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "11",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "12",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ],
+                    "Oficina": "ANTOFAGASTA"
+                }
+            ]
+        },
+        {
+            "Pagina": "13",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ],
+                    "Oficina": "ANTOFAGASTA",
+                    "Codigo": "EN3807",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "14",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ],
+                    "Oficina": "ANTOFAGASTA",
+                    "Codigo": "EN3800",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "15",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ],
+                    "Oficina": "COYHAIQUE"
+                }
+            ]
+        },
+        {
+            "Pagina": "16",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ],
+                    "Oficina": "COYHAIQUE",
+                    "Codigo": "EN5886",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "17",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ],
+                    "Oficina": "COYHAIQUE",
+                    "Codigo": "EN5145",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "18",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ],
+                    "Oficina": "PUERTO MONTT"
+                }
+            ]
+        },
+        {
+            "Pagina": "19",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ],
+                    "Oficina": "PUERTO MONTT",
+                    "Codigo": "EN4809",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "20",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ],
+                    "Oficina": "PUERTO MONTT",
+                    "Codigo": "EN6247",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "21",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "ENVASADO"
+                    ],
+                    "Oficina": "PUERTO MONTT",
+                    "Codigo": "EN5142",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "23",
+            "Tipo": "Evolucion",
+            "Filtros": [
+                {
+                    "startDate": "2024-01-29",
+                    "endDate": "2025-01-20",
+                    "Flotas": [
+                        "GRANEL"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "24",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "25",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "ANTOFAGASTA"
+                }
+            ]
+        },
+        {
+            "Pagina": "26",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "ANTOFAGASTA",
+                    "Codigo": "GR1636",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "27",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "ANTOFAGASTA",
+                    "Codigo": "GR5091",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "28",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "ANTOFAGASTA",
+                    "Codigo": "GR5095",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "29",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "COPIAPO"
+                }
+            ]
+        },
+        {
+            "Pagina": "30",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "COPIAPO",
+                    "Codigo": "GR5141",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "31",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "COPIAPO",
+                    "Codigo": "GR22(ES22)",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "32",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "MAIPU"
+                }
+            ]
+        },
+        {
+            "Pagina": "33",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "MAIPU",
+                    "Codigo": "GR5054",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "34",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "MAIPU",
+                    "Codigo": "GR5017",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "35",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "GRANEL"
+                    ],
+                    "Oficina": "MAIPU",
+                    "Codigo": "GR5023",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "37",
+            "Tipo": "Evolucion",
+            "Filtros": [
+                {
+                    "startDate": "2024-01-22",
+                    "endDate": "2025-01-20",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "38",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "39",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ],
+                    "Oficina": "SAN FERNANDO"
+                }
+            ]
+        },
+        {
+            "Pagina": "40",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ],
+                    "Oficina": "SAN FERNANDO",
+                    "Codigo": "EN4980",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "41",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ],
+                    "Oficina": "SAN FERNANDO",
+                    "Codigo": "EN4548",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "42",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ],
+                    "Oficina": "TEMUCO"
+                }
+            ]
+        },
+        {
+            "Pagina": "43",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ],
+                    "Oficina": "TEMUCO",
+                    "Codigo": "EN5953",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "44",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ],
+                    "Oficina": "PEÑON"
+                }
+            ]
+        },
+        {
+            "Pagina": "45",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ],
+                    "Oficina": "PEÑON",
+                    "Codigo": "EN6299",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "46",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ],
+                    "Oficina": "PEÑON",
+                    "Codigo": "EN5994",
+                    "ultimas": "4"
+                }
+            ]
+        },
+        {
+            "Pagina": "47",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "Flotas": [
+                        "TRANSFERENCIA"
+                    ],
+                    "Oficina": "PEÑON",
+                    "Codigo": "EN6271",
+                    "ultimas": "4"
+                }
+            ]
+        }
+    ]
+}

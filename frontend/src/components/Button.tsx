@@ -19,7 +19,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex items-center justify-center gap-2 px-20 py-3 bg-primary text-white rounded-[8px] ${className}`}
+      className={`flex items-center justify-center gap-2 px-20 py-4 bg-primary text-white rounded-[8px] ${className}`}
     >
       {icon && <span>{icon}</span>}
       <span>{text}</span>

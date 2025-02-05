@@ -1,0 +1,132 @@
+{
+    "Cliente": "Albemarle",
+    "Graficos": [
+        {
+            "Pagina": "2",
+            "Tipo": "Evolucion",
+            "Filtros": [
+                {
+                    "startDate": "2024-01-29",
+                    "endDate": "2025-01-20"
+                }
+            ]
+        },
+        {
+            "Pagina": "3",
+            "Tipo": "Evolucion",
+            "Filtros": [
+                {
+                    "startDate": "2024-01-29",
+                    "endDate": "2025-01-20",
+                    "Transportista": [
+                        "Coseducam",
+                        "Train",
+                        "Vía Carrión"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "4",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Transportista": [
+                        "Coseducam",
+                        "Train",
+                        "Vía Carrión"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "5",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "endDate": "2025-01-26",
+                    "ultimas": "2"
+                }
+            ]
+        },
+        {
+            "Pagina": "6",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "top": "45",
+                    "dev": 50
+                }
+            ]
+        },
+        {
+            "Pagina": "9",
+            "Tipo": "Evolucion",
+            "Filtros": [
+                {
+                    "startDate": "2024-01-29",
+                    "endDate": "2025-01-20",
+                    "Transportista": [
+                        "Coseducam"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "10",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Transportista": [
+                        "Coseducam"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "12",
+            "Tipo": "Evolucion",
+            "Filtros": [
+                {
+                    "startDate": "2024-01-29",
+                    "endDate": "2025-01-20",
+                    "Transportista": [
+                        "Train"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "15",
+            "Tipo": "Evolucion",
+            "Filtros": [
+                {
+                    "startDate": "2024-01-29",
+                    "endDate": "2025-01-20",
+                    "Transportista": [
+                        "Vía Carrión"
+                    ]
+                }
+            ]
+        },
+        {
+            "Pagina": "16",
+            "Tipo": "Ranking",
+            "Filtros": [
+                {
+                    "startDate": "2025-01-20",
+                    "endDate": "2025-01-26",
+                    "Transportista": [
+                        "Vía Carrión"
+                    ]
+                }
+            ]
+        }
+    ]
+}
