@@ -7,8 +7,8 @@ export interface PageObservation {
 }
 
 export interface PDFContextProps {
-  pdfFile: File | null;
-  setPdfFile: React.Dispatch<React.SetStateAction<File | null>>;
+  pdfFile: string | null;
+  setPdfFile: React.Dispatch<React.SetStateAction<string | null>>;
   observations: PageObservation[];
   setObservations: React.Dispatch<React.SetStateAction<PageObservation[]>>;
 }

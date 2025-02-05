@@ -5,7 +5,7 @@ import Button from '../components/Button';
 import { FileUp } from 'lucide-react';
 
 interface DragDropProps {
-  onFileAccepted: (file: File) => void;
+  onFileAccepted: (url: string) => void;
 }
 
 const DragDrop: React.FC<DragDropProps> = ({ onFileAccepted }) => {
@@ -14,7 +14,6 @@ const DragDrop: React.FC<DragDropProps> = ({ onFileAccepted }) => {
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
-      // Enviar al backend a través de /upload (opcional)
       const formData = new FormData();
       formData.append("file", file);
       try {
@@ -27,11 +26,12 @@ const DragDrop: React.FC<DragDropProps> = ({ onFileAccepted }) => {
         }
         const result = await response.json();
         console.log("PDF subido:", result);
+        const publicURL = `http://localhost:8000/uploads/${result.filename}`;
+        onFileAccepted(publicURL);
+        navigate("/reports");
       } catch (error) {
         console.error("Error en la subida:", error);
       }
-      onFileAccepted(file);
-      navigate("/reports");
     }
   }, [navigate, onFileAccepted]);
 

@@ -8,7 +8,6 @@ const Reports: React.FC = () => {
   const [numPages, setNumPages] = useState<number>(0);
 
   useEffect(() => {
-    // Inicializa las observaciones si aún no existen
     if (pdfFile && numPages > 0 && observations.length === 0) {
       const initObs: PageObservation[] = Array.from({ length: numPages }, (_, i) => ({
         pageNumber: i + 1,
@@ -19,13 +18,11 @@ const Reports: React.FC = () => {
     }
   }, [pdfFile, numPages, observations, setObservations]);
 
-  // Si no hay PDF, mostramos un mensaje
   if (!pdfFile) {
     return <p className="text-primary">No se ha subido ningún PDF.</p>;
   }
 
-  // Nombre del PDF (ej. "Nombre_semana.pdf")
-  const fileName = pdfFile.name || "Reporte.pdf";
+  const fileName = pdfFile ? pdfFile.split("/").pop() || "Reporte.pdf" : "Reporte.pdf";
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -35,7 +32,6 @@ const Reports: React.FC = () => {
           <h1 className="text-2xl font-bold text-primary">{fileName}</h1>
           {numPages > 0 && (
             <span className="text-gray-600 text-sm">
-              {/* Aquí podrías mostrar “Página X” o “Total de páginas: X” según tu preferencia */}
               Total de páginas: {numPages}
             </span>
           )}
@@ -47,6 +43,7 @@ const Reports: React.FC = () => {
         <Document
           file={pdfFile}
           onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+          onLoadError={(error) => console.error("Error al cargar el PDF:", error)}
         >
           {/* Como ejemplo, mostramos la segunda página si existe */}
           {numPages >= 2 ? (

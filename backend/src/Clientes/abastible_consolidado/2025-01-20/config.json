@@ -1,5 +1,6 @@
 {
     "Cliente": "abastible_consolidado",
+    "Excludes": [0, 7, 8, 21, 35],
     "Replaces": {
         "Oficina": {
             "DISPONIBLES": "SANTIAGO",

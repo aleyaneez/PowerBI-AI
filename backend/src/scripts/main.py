@@ -1,3 +1,5 @@
+import uvicorn
+
 import os
 import shutil
 import json
@@ -6,10 +8,13 @@ import io
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 
 from exportCSV import CSVExporter
 from reportGenerator import ReportGenerator
 from folders import buildFolder
+from companyWeek import getCompanyWeek
+from jsonUtils import getExcludes
 
 app = FastAPI()
 
@@ -33,28 +38,35 @@ async def upload_pdf(file: UploadFile = File(...)):
     """
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Solo se permiten archivos PDF.")
+    
     filePath = os.path.join(UPLOAD_DIR, file.filename)
     with open(filePath, "wb") as f:
         f.write(await file.read())
+    
     return {"filename": file.filename, "filePath": filePath}
 
 @app.post("/process")
 async def processPDF(
-    file: UploadFile = File(...),
-    company: str = Form(...),
-    week: str = Form(...)
+    file: UploadFile = File(...)
 ):
     """
     Copia el PDF subido a la carpeta correspondiente (usando buildFolder)
     y ejecuta la exportación de CSV (llamando a CSVExporter.export()).
     Se espera que el archivo de configuración (config.json) y el CSV principal ya estén en su lugar.
     """
+    print(f"Procesando archivo: {file.filename}")
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Solo se permiten archivos PDF.")
+    
     # Guarda el archivo temporalmente
     tempPath = os.path.join(UPLOAD_DIR, file.filename)
     with open(tempPath, "wb") as f:
         f.write(await file.read())
+    
+    try:
+        company, week = getCompanyWeek(file.filename)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error al obtener el cliente y semana: {e}')
     
     # Copia el PDF al directorio generado por buildFolder
     basePath = buildFolder(company, week)
@@ -68,8 +80,11 @@ async def processPDF(
         exporter.export()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error exportando CSV: {e}")
+    
+    configPath = os.path.join(basePath, 'config.json')
+    excludes = getExcludes(configPath)
 
-    return {"detail": "CSV exportado exitosamente"}
+    return {"detail": "CSV exportado exitosamente", "company": company, "week": week, "excludes": excludes}
 
 @app.post("/finalize")
 async def finalizePDF(
@@ -77,8 +92,8 @@ async def finalizePDF(
     company: str = Form(...),
     week: str = Form(...),
     pdfName: str = Form(...),
-    excludePages: str = Form(...),  # Se enviará como JSON string (ej: "[0,7,8,21,35]")
-    riesgo: str = Form(...)         # Se enviará como JSON string (ej: '{"bajo":6.1,"medio":8.2,"alto":9.8}')
+    excludePages: str = Form(...),
+    riesgo: str = Form(...)
 ):
     """
     Recibe el PDF (o utiliza el que ya se encuentre en la carpeta) y los parámetros para generar el reporte final.
@@ -126,5 +141,5 @@ async def finalizePDF(
                             headers={"Content-Disposition": "attachment; filename=final.pdf"})
 
 if __name__ == '__main__':
-    import uvicorn
+    app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

@@ -6,7 +6,7 @@ interface PDFProviderProps {
 }
 
 const PDFProvider: React.FC<PDFProviderProps> = ({ children }) => {
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfFile, setPdfFile] = useState<string | null>(null);
   const [observations, setObservations] = useState<PageObservation[]>([]);
 
   return (

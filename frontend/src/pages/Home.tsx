@@ -13,8 +13,8 @@ const Home: React.FC = () => {
 
   const { setPdfFile } = useContext(PDFContext);
 
-  const handleFileAccepted = (file: File) => {
-    setPdfFile(file);
+  const handleFileAccepted = (url: string) => {
+    setPdfFile(url);
   };
 
   return (
