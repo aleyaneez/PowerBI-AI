@@ -22,7 +22,7 @@ const Reports: React.FC = () => {
     return <p className="text-primary">No se ha subido ningún PDF.</p>;
   }
 
-  const fileName = pdfFile ? pdfFile.split("/").pop() || "Reporte.pdf" : "Reporte.pdf";
+  const fileName = pdfFile.split("/").pop() || "Reporte.pdf";
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -38,14 +38,13 @@ const Reports: React.FC = () => {
         </div>
       </div>
 
-      {/* Contenedor visual para el PDF en sí (página seleccionada, por ejemplo la 2) */}
+      {/* Vista preliminar del PDF */}
       <div className="bg-white shadow rounded p-4 mb-6">
         <Document
           file={pdfFile}
           onLoadSuccess={({ numPages }) => setNumPages(numPages)}
           onLoadError={(error) => console.error("Error al cargar el PDF:", error)}
         >
-          {/* Como ejemplo, mostramos la segunda página si existe */}
           {numPages >= 2 ? (
             <Page pageNumber={2} className="border" />
           ) : (
@@ -54,27 +53,7 @@ const Reports: React.FC = () => {
         </Document>
       </div>
 
-      {/* Observación para la página 2 (o la que quieras manejar) */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-primary mb-2">Observación</h2>
-        <textarea
-          className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          placeholder="Escribe aquí la observación..."
-          value={observations[1]?.observation || ""} 
-          onChange={(e) => {
-            // Actualizar la observación de la página 2 en el contexto
-            setObservations((prev) =>
-              prev.map((p) =>
-                p.pageNumber === 2
-                  ? { ...p, observation: e.target.value }
-                  : p
-              )
-            );
-          }}
-        />
-      </div>
-
-      {/* Botón de exportar PDF final */}
+      {/* Botón para exportar el PDF final */}
       <div className="flex justify-center">
         <ExportButton />
       </div>

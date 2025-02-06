@@ -1,47 +1,45 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { PDFContext } from '../context/PDFContext';
 import Button from './Button';
 import { FileDown } from 'lucide-react';
+import { parseFilename } from '../utils/parseFilename';
+import Loading from './Loading';
 
 const ExportButton: React.FC = () => {
-  const { pdfFile, observations } = useContext(PDFContext);
+  const { pdfFile } = useContext(PDFContext);
+  const [loading, setLoading] = useState(false);
 
   const handleSend = async () => {
-    // Verifica que todas las páginas estén aprobadas
-    const notApproved = observations.filter(page => !page.approved);
-    if (notApproved.length > 0) {
-      alert("Por favor, aprueba todas las observaciones antes de enviar.");
-      return;
-    }
-
-    // Prepara el objeto con las observaciones: { "1": "Obs página 1", ... }
-    const obsData: Record<number, string> = {};
-    observations.forEach(page => {
-      obsData[page.pageNumber] = page.observation;
-    });
-
     if (!pdfFile) {
       alert("No se ha seleccionado ningún PDF.");
       return;
     }
 
-    // Aquí debes definir o extraer los demás parámetros
-    const company = "abastible"; // o extraer del estado/contexto
-    const week = "2025-01-20";    // idem
-    const pdfName = "Abastible";  // idem
-    const excludePages = [0, 7, 8, 21, 35];
-    const riesgo = { "bajo": 6.1, "medio": 8.2, "alto": 9.8 };
+    let company = "";
+    let week = "";
+    let pdfName = "";
+    try {
+      const filename = pdfFile.split("/").pop() || "";
+      const parsed = parseFilename(filename);
+      company = parsed.company;
+      week = parsed.week;
+      pdfName = company;
+      console.log("Company:", company);
+      console.log("Week:", week);
+    } catch (error) {
+      console.error("Error al extraer company y week:", error);
+      alert("El nombre del PDF no cumple el formato esperado.");
+      return;
+    }
 
+    // Preparamos el FormData para enviar al backend
     const formData = new FormData();
-    formData.append('file', pdfFile);
-    formData.append('observations', JSON.stringify(obsData));
     formData.append('company', company);
     formData.append('week', week);
     formData.append('pdfName', pdfName);
-    formData.append('excludePages', JSON.stringify(excludePages));
-    formData.append('riesgo', JSON.stringify(riesgo));
 
     try {
+      setLoading(true);
       const response = await fetch('http://localhost:8000/finalize', {
         method: 'POST',
         body: formData,
@@ -50,7 +48,7 @@ const ExportButton: React.FC = () => {
         throw new Error("Error en el proceso");
       }
       const blob = await response.blob();
-      // Descargar el PDF final
+      // Forzar la descarga del PDF final
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -60,16 +58,24 @@ const ExportButton: React.FC = () => {
     } catch (error) {
       console.error(error);
       alert("Hubo un error al enviar el reporte");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Button
-      text="Exportar PDF"
-      onClick={handleSend}
-      className="mt-4"
-      icon={<FileDown size={20} />}
-    />
+    <div>
+      {loading ? (
+        <Loading />
+      ) : (
+        <Button
+          text="Exportar PDF"
+          onClick={handleSend}
+          className="mt-4"
+          icon={<FileDown size={20} />}
+        />
+      )}
+    </div>
   );
 };
 

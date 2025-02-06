@@ -14,7 +14,7 @@ from exportCSV import CSVExporter
 from reportGenerator import ReportGenerator
 from folders import buildFolder
 from companyWeek import getCompanyWeek
-from jsonUtils import getExcludes
+from jsonUtils import getExcludes, getRiesgo
 
 app = FastAPI()
 
@@ -27,9 +27,11 @@ app.add_middleware(
 )
 
 # Directorio para guardar los archivos subidos
-UPLOAD_DIR = "uploads"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
@@ -40,106 +42,70 @@ async def upload_pdf(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Solo se permiten archivos PDF.")
     
     filePath = os.path.join(UPLOAD_DIR, file.filename)
+    print(f'Base dir: {BASE_DIR}')
+    print(f'Upload dir: {UPLOAD_DIR}')
     with open(filePath, "wb") as f:
         f.write(await file.read())
     
     return {"filename": file.filename, "filePath": filePath}
 
-@app.post("/process")
-async def processPDF(
-    file: UploadFile = File(...)
+@app.post("/finalize")
+async def finalize_pdf(
+    company: str = Form(...),
+    week: str = Form(...),
+    pdfName: str = Form(...)
 ):
     """
-    Copia el PDF subido a la carpeta correspondiente (usando buildFolder)
-    y ejecuta la exportación de CSV (llamando a CSVExporter.export()).
-    Se espera que el archivo de configuración (config.json) y el CSV principal ya estén en su lugar.
+    Recibe el PDF subido, extrae company y week, copia el PDF a la carpeta destino,
+    ejecuta CSVExporter.export() y ReportGenerator.generateReport(), y devuelve el PDF final.
     """
-    print(f"Procesando archivo: {file.filename}")
-    if file.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Solo se permiten archivos PDF.")
-    
-    # Guarda el archivo temporalmente
-    tempPath = os.path.join(UPLOAD_DIR, file.filename)
-    with open(tempPath, "wb") as f:
-        f.write(await file.read())
-    
-    try:
-        company, week = getCompanyWeek(file.filename)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f'Error al obtener el cliente y semana: {e}')
-    
-    # Copia el PDF al directorio generado por buildFolder
-    basePath = buildFolder(company, week)
-    copyPDFPath = os.path.join(basePath, f"{company}_{week}.pdf")
-    shutil.copy2(tempPath, copyPDFPath)
-    print(f"PDF copiado a {copyPDFPath}")
+    temp_path = os.path.join(UPLOAD_DIR, f"{company}_{week}.pdf")
+    if not os.path.exists(temp_path):
+        raise HTTPException(status_code=404, detail="El PDF subido no se encontró en la carpeta temporal.")
 
-    # Llama a la exportación de CSV
+    # Crea la carpeta destino usando buildFolder y copia el PDF allí
+    base_path = buildFolder(company, week)
+    dest_pdf_path = os.path.join(base_path, f"{company}_{week}.pdf")
+    shutil.copy2(temp_path, dest_pdf_path)
+    print(f"PDF copiado a {dest_pdf_path}")
+
+    # Llama a CSVExporter para generar los CSV necesarios a partir del PDF y config.json
     exporter = CSVExporter(company, week)
     try:
         exporter.export()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error exportando CSV: {e}")
+
+    # Extrae la lista de páginas a excluir y los niveles de riesgo desde el config
+    config_path = os.path.join(base_path, "config.json")
+    excludes = getExcludes(config_path)
     
-    configPath = os.path.join(basePath, 'config.json')
-    excludes = getExcludes(configPath)
+    # Extrae los niveles de riesgo desde el metadata.json
+    metadataPath = os.path.join(base_path, '..', 'metadata.json')
+    riesgo = getRiesgo(metadataPath)
 
-    return {"detail": "CSV exportado exitosamente", "company": company, "week": week, "excludes": excludes}
-
-@app.post("/finalize")
-async def finalizePDF(
-    file: UploadFile = File(...),
-    company: str = Form(...),
-    week: str = Form(...),
-    pdfName: str = Form(...),
-    excludePages: str = Form(...),
-    riesgo: str = Form(...)
-):
-    """
-    Recibe el PDF (o utiliza el que ya se encuentre en la carpeta) y los parámetros para generar el reporte final.
-    Se utiliza ReportGenerator para insertar las observaciones y se devuelve el PDF final.
-    """
-    # Validar que el archivo sea PDF
-    if file.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Solo se permiten archivos PDF.")
-
-    # Guarda el archivo temporalmente
-    tempPath = os.path.join(UPLOAD_DIR, file.filename)
-    with open(tempPath, "wb") as f:
-        f.write(await file.read())
-    
-    # Parsear los parámetros JSON
+    # Instancia ReportGenerator y genera el PDF final con observaciones insertadas
+    output_pdf_name = f"{pdfName}_output.pdf"
     try:
-        excludePagesList = json.loads(excludePages)
-        riesgoDict = json.loads(riesgo)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Formato incorrecto en excludePages o riesgo")
-
-    # Copiar el PDF al directorio de destino (la carpeta se crea con buildFolder)
-    basePath = buildFolder(company, week)
-    copyPDFPath = os.path.join(basePath, f"{pdfName}_{week}.pdf")
-    shutil.copy2(tempPath, copyPDFPath)
-
-    # Crear la instancia de ReportGenerator y generar el reporte
-    outputPDFName = f"{pdfName}_output.pdf"
-    try:
-        reportGen = ReportGenerator(company, week, pdfName, excludePagesList, riesgoDict, outputPDFName)
+        reportGen = ReportGenerator(company, week, company, excludes, riesgo, output_pdf_name)
         reportGen.generateReport()
     except Exception as e:
+        print(f"Error generando el reporte: {e}")
         raise HTTPException(status_code=500, detail=f"Error generando el reporte: {e}")
 
-    # Leer el PDF final generado y enviarlo como respuesta
-    finalPDFPath = os.path.join(basePath, outputPDFName)
-    if not os.path.exists(finalPDFPath):
+    # Lee el PDF final generado y lo devuelve para descarga
+    final_pdf_path = os.path.join(base_path, output_pdf_name)
+    if not os.path.exists(final_pdf_path):
         raise HTTPException(status_code=500, detail="El PDF final no se generó correctamente.")
 
-    with open(finalPDFPath, "rb") as pdfFile:
-        pdfBytes = pdfFile.read()
+    with open(final_pdf_path, "rb") as pdf_file:
+        pdf_bytes = pdf_file.read()
 
-    return StreamingResponse(io.BytesIO(pdfBytes),
-                            media_type="application/pdf",
-                            headers={"Content-Disposition": "attachment; filename=final.pdf"})
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=final.pdf"}
+    )
 
 if __name__ == '__main__':
-    app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

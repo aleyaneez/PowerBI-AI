@@ -11,3 +11,7 @@ def loadJSON(path: str) -> dict:
 def getExcludes(path: str) -> list:
     config = loadJSON(path)
     return config.get("Excludes", [])
+
+def getRiesgo(path: str) -> dict:
+    config = loadJSON(path)
+    return config.get("Informacion", {}).get("Niveles de Riesgo", {})

@@ -115,6 +115,7 @@ def insertObsPDF(
     marginLeft: float = 60,
     textBoxHeight: float = 140
 ):
+    print(f'Abriendo PDF: {pdfPath}')
     doc = pymupdf.open(pdfPath)
     totalPages = len(doc)
 
@@ -154,6 +155,9 @@ def insertObsPDF(
                 responses[page_num] = assistantResponse
             except Exception as exc:
                 responses[pageIndex] = f"Error: {exc}"
+    
+    print(f'Generación de observaciones listas.')
+    print(f'Excluyendo páginas: {excludePages}')
 
     # Insertar en PDF en orden
     for p in range(totalPages):
@@ -163,7 +167,12 @@ def insertObsPDF(
         if p not in responses:
             print(f"No se encontró respuesta del asistente para la página {p + 1}. Saltando la inserción.")
             continue
-        assistantResponse = responses[p]
+        try:
+            print(f'Intentando asignar respuesta para página {p + 1}\n Respuesta: {responses[p]}')
+            assistantResponse = responses[p]
+        except Exception as e:
+            print(f"Error al intentar asignar la respuesta del asistente para la página {p + 1}: {e}")
+            continue
         if not assistantResponse:
             print(f"No se encontró respuesta del asistente para la página {p + 1}. Saltando la inserción.")
             continue
