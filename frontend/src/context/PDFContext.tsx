@@ -11,6 +11,8 @@ export interface PDFContextProps {
   setPdfFile: React.Dispatch<React.SetStateAction<string | null>>;
   observations: PageObservation[];
   setObservations: React.Dispatch<React.SetStateAction<PageObservation[]>>;
+  excludes: number[];
+  setExcludes: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
 export const PDFContext = createContext<PDFContextProps>({
@@ -18,4 +20,6 @@ export const PDFContext = createContext<PDFContextProps>({
   setPdfFile: () => {},
   observations: [],
   setObservations: () => {},
+  excludes: [],
+  setExcludes: () => {},
 });

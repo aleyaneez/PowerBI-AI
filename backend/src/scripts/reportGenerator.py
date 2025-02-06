@@ -43,7 +43,7 @@ class ReportGenerator:
             print(f"El PDF ya se encuentra en la ruta destino: {self.pdfPath}")
     
     def generateReport(self):
-        insertObsPDF(
+        obs = insertObsPDF(
             self.pdfPath,
             self.outputPDF,
             self.csvFolder,
@@ -52,3 +52,4 @@ class ReportGenerator:
             self.contextJSON,
             self.week
         )
+        return obs

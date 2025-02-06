@@ -6,8 +6,9 @@ import { parseFilename } from '../utils/parseFilename';
 import Loading from './Loading';
 
 const ExportButton: React.FC = () => {
-  const { pdfFile } = useContext(PDFContext);
+  const { pdfFile, setObservations, setExcludes } = useContext(PDFContext);
   const [loading, setLoading] = useState(false);
+  const [finalPdfUrl, setFinalPdfUrl] = useState("");
 
   const handleSend = async () => {
     if (!pdfFile) {
@@ -47,14 +48,16 @@ const ExportButton: React.FC = () => {
       if (!response.ok) {
         throw new Error("Error en el proceso");
       }
-      const blob = await response.blob();
-      // Forzar la descarga del PDF final
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "final.pdf";
-      a.click();
-      window.URL.revokeObjectURL(url);
+      // Se espera recibir un JSON con: final_pdf_url, observations y excludes
+      const data = await response.json();
+      console.log("Datos recibidos:", data);
+
+      // Actualizar el contexto con las observaciones y las páginas a excluir
+      if (setObservations) setObservations(data.observations);
+      if (setExcludes) setExcludes(data.excludes);
+
+      // Guardar la URL del PDF final para mostrar un enlace de descarga
+      setFinalPdfUrl(data.final_pdf_url);
     } catch (error) {
       console.error(error);
       alert("Hubo un error al enviar el reporte");
@@ -74,6 +77,13 @@ const ExportButton: React.FC = () => {
           className="mt-4"
           icon={<FileDown size={20} />}
         />
+      )}
+      {finalPdfUrl && (
+        <div className="mt-4">
+          <a href={finalPdfUrl} download="final.pdf" className="text-primary underline">
+            Descargar PDF Final
+          </a>
+        </div>
       )}
     </div>
   );

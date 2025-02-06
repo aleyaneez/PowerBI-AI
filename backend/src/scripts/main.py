@@ -79,11 +79,12 @@ async def finalize_pdf(
     config_path = os.path.join(base_path, "config.json")
     excludes = getExcludes(config_path)
     
-    if not os.path.exists(os.path.join(base_path, '..', 'metadata.json')):
+    metadataPathParent = os.path.join(base_path, '..', 'metadata.json')
+    if not os.path.exists(metadataPathParent):
         metadata = getMetadata(company)
-        with open(os.path.join(base_path, '..', 'metadata.json'), 'w', encoding='utf-8') as file:
+        with open(metadataPathParent, 'w', encoding='utf-8') as file:
             json.dump(metadata, file, indent=4, ensure_ascii=False)
-    metadataPath = os.path.join(base_path, '..', 'metadata.json')
+    metadataPath = metadataPathParent
     
     if company == 'enex':
         riesgo = getMetas(metadataPath)
@@ -97,24 +98,22 @@ async def finalize_pdf(
     output_pdf_name = f"{pdfName}_output.pdf"
     try:
         reportGen = ReportGenerator(company, week, company, excludes, riesgo, output_pdf_name)
-        reportGen.generateReport()
+        obsList = reportGen.generateReport()
     except Exception as e:
         print(f"Error generando el reporte: {e}")
         raise HTTPException(status_code=500, detail=f"Error generando el reporte: {e}")
 
-    # Lee el PDF final generado y lo devuelve para descarga
-    final_pdf_path = os.path.join(base_path, output_pdf_name)
-    if not os.path.exists(final_pdf_path):
-        raise HTTPException(status_code=500, detail="El PDF final no se generó correctamente.")
-
-    with open(final_pdf_path, "rb") as pdf_file:
-        pdf_bytes = pdf_file.read()
-
-    return StreamingResponse(
-        io.BytesIO(pdf_bytes),
-        media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=final.pdf"}
-    )
+    # Copiar el PDF final a UPLOAD_DIR para exponerlo vía URL
+    public_pdf_path = os.path.join(UPLOAD_DIR, output_pdf_name)
+    shutil.copy2(os.path.join(base_path, output_pdf_name), public_pdf_path)
+    final_pdf_url = f"http://localhost:8000/uploads/{output_pdf_name}"
+    
+    # Retornar JSON con la URL del PDF final, el listado de observaciones y el array de exclusiones
+    return {
+        "final_pdf_url": final_pdf_url,
+        "observations": obsList,
+        "excludes": excludes
+    }
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

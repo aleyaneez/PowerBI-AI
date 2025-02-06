@@ -1,5 +1,5 @@
 import pandas as pd
-from globals import METAS, capitalizePalabras
+from globals import META, capitalizePalabras
 
 def enexJSON(df: pd.DataFrame, company: str) -> dict:
     """Buildear un JSON con la información de la data extraída
@@ -14,7 +14,7 @@ def enexJSON(df: pd.DataFrame, company: str) -> dict:
     configDict = {
         "Cliente": company,
         "Informacion": {
-            "Metas RAEV/100": METAS,
+            "Metas RAEV/100": META,
             "Mercados": mercado,
             "Plantas": planta,
             "Especialistas": especialista,

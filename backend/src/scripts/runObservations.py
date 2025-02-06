@@ -206,3 +206,14 @@ def insertObsPDF(
     doc.save(outputPDF)
     doc.close()
     print(f"PDF guardado en: {outputPDF}")
+    
+    obsList = []
+    for p in range(totalPages):
+        obsObj = {
+            "pageNumber": p + 1,
+            "observation": responses.get(p, "No se encontró observación"),
+            "excluded": p in excludePages
+        }
+        obsList.append(obsObj)
+    print(f'Lista de observaciones creada:\n {obsList}')
+    return obsList

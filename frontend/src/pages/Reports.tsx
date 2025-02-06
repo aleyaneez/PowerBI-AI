@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Document, Page } from "react-pdf";
 import { PDFContext, PageObservation } from "../context/PDFContext";
 import ExportButton from "../components/ExportButton";
+import PageCard from "../components/PageCard";
 
 const Reports: React.FC = () => {
   const { pdfFile, observations, setObservations } = useContext(PDFContext);
@@ -53,7 +54,10 @@ const Reports: React.FC = () => {
         </Document>
       </div>
 
-      {/* Botón para exportar el PDF final */}
+      {/* Renderizar las tarjetas con observaciones */}
+      <PageCard excludes={excludes} />
+
+      {/* Botón para exportar el PDF final y actualizar observaciones/exclusiones en el contexto */}
       <div className="flex justify-center">
         <ExportButton />
       </div>
