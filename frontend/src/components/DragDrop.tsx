@@ -26,7 +26,7 @@ const DragDrop: React.FC<DragDropProps> = ({ onFileAccepted }) => {
         }
         const result = await response.json();
         console.log("PDF subido:", result);
-        const publicURL = `http://localhost:8000/uploads/${result.filename}`;
+        const publicURL = `http://localhost:8000/uploads/${result.filename.toLowerCase()}`;
         onFileAccepted(publicURL);
         navigate("/reports");
       } catch (error) {

@@ -3,6 +3,7 @@ import shutil
 from folders import buildFolder
 from jsonUtils import loadJSON
 from runObservations import insertObsPDF
+import json
 import globals
 
 class ReportGenerator:
@@ -20,6 +21,7 @@ class ReportGenerator:
         self.outputPDF = os.path.join(self.basePath, outputPDF)
         
         self.metadataPath = os.path.join(self.basePath, '..', 'metadata.json')
+        
         self.contextJSON = loadJSON(self.metadataPath)
         
         self.pdfPath = os.path.join(self.basePath, f'{pdfName}_{week}.pdf')

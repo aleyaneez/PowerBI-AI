@@ -13,8 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from exportCSV import CSVExporter
 from reportGenerator import ReportGenerator
 from folders import buildFolder
-from companyWeek import getCompanyWeek
-from jsonUtils import getExcludes, getRiesgo
+from jsonUtils import getExcludes, getRiesgo, getMetas, getMetadata
 
 app = FastAPI()
 
@@ -80,10 +79,20 @@ async def finalize_pdf(
     config_path = os.path.join(base_path, "config.json")
     excludes = getExcludes(config_path)
     
-    # Extrae los niveles de riesgo desde el metadata.json
+    if not os.path.exists(os.path.join(base_path, '..', 'metadata.json')):
+        metadata = getMetadata(company)
+        with open(os.path.join(base_path, '..', 'metadata.json'), 'w', encoding='utf-8') as file:
+            json.dump(metadata, file, indent=4, ensure_ascii=False)
     metadataPath = os.path.join(base_path, '..', 'metadata.json')
-    riesgo = getRiesgo(metadataPath)
+    
+    if company == 'enex':
+        riesgo = getMetas(metadataPath)
+    else:
+        riesgo = getRiesgo(metadataPath)
 
+    print(f'Config path: {config_path}')
+    print(f'Metadata path: {metadataPath}')
+    
     # Instancia ReportGenerator y genera el PDF final con observaciones insertadas
     output_pdf_name = f"{pdfName}_output.pdf"
     try:

@@ -1,10 +1,16 @@
 import pandas as pd
+import numpy as np
 from datetime import datetime, timedelta
 
 RIESGO = {
     "bajo": 6.1,
     "medio": 8.2,
     "alto": 9.8
+}
+
+META = {
+    "2024": 4,
+    "2025": 3,
 }
 
 def capitalizePalabras(s: str) -> str:
@@ -27,6 +33,28 @@ def getRAEV100Level(df: pd.DataFrame, bajo: float, medio: float, alto: float) ->
         else 'alto' if x <= alto 
         else 'muy alto'
         )
+    return df
+
+def getCumplimiento(df, meta):
+    """Devolver el df con la columna 'Meta' que
+    indica si cumple o no la meta. Se asigna respecto al diccionario meta que contiene los años con su respectiva meta.
+    Se asigna el cumplimiento considerando la fecha de la columna 'Date' y la meta correspondiente.
+    """
+    years = df['Date'].dt.year.astype(str)
+    metaMap = years.map(meta)
+    df['Meta'] = np.select(
+        condlist=[
+            df['raev100'] < metaMap,
+            df['raev100'] == metaMap,
+            metaMap.isna()
+        ],
+        choicelist=[
+            'Cumple',
+            'En la meta',
+            'Meta no definida'
+        ],
+        default='No Cumple'
+    )
     return df
 
 def applyGroupEv(df, groupCols, freq='W'):
