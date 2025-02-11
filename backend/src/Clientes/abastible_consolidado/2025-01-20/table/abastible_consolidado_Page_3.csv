@@ -1,53 +1,53 @@
 Date,Envasado-Raev100,Envasado-Riesgo,Granel-Raev100,Granel-Riesgo,Transferencia-Raev100,Transferencia-Riesgo
-2024-01-29,9.2,muy alto,8.2,alto,6.3,medio
-2024-02-05,9.8,muy alto,7.7,alto,6.7,alto
-2024-02-12,8.7,muy alto,7.7,alto,6.4,medio
-2024-02-19,10.2,muy alto,7.8,alto,6.0,medio
-2024-02-26,9.4,muy alto,7.8,alto,11.2,muy alto
-2024-03-04,9.4,muy alto,7.4,alto,6.6,alto
-2024-03-11,9.7,muy alto,7.5,alto,8.8,muy alto
-2024-03-18,10.0,muy alto,7.8,alto,7.3,alto
-2024-03-25,10.1,muy alto,7.2,alto,8.0,alto
-2024-04-01,9.1,muy alto,8.0,alto,9.4,muy alto
-2024-04-08,9.1,muy alto,6.9,alto,9.1,muy alto
-2024-04-15,9.9,muy alto,7.9,alto,7.0,alto
-2024-04-22,9.7,muy alto,7.5,alto,6.7,alto
-2024-04-29,11.0,muy alto,8.5,alto,6.6,alto
-2024-05-06,10.5,muy alto,8.4,alto,7.4,alto
-2024-05-13,11.2,muy alto,8.9,muy alto,6.5,medio
-2024-05-20,11.0,muy alto,8.5,alto,5.6,medio
-2024-05-27,10.4,muy alto,8.4,alto,5.9,medio
-2024-06-03,10.5,muy alto,8.4,alto,5.4,medio
-2024-06-10,10.8,muy alto,8.2,alto,6.4,medio
-2024-06-17,10.7,muy alto,7.4,alto,7.0,alto
-2024-06-24,11.6,muy alto,7.9,alto,8.0,alto
+2024-01-29,9.2,alto,8.2,medio,6.3,medio
+2024-02-05,9.8,alto,7.7,medio,6.7,medio
+2024-02-12,8.7,alto,7.7,medio,6.4,medio
+2024-02-19,10.2,muy alto,7.8,medio,6.0,bajo
+2024-02-26,9.4,alto,7.8,medio,11.2,muy alto
+2024-03-04,9.4,alto,7.4,medio,6.6,medio
+2024-03-11,9.7,alto,7.5,medio,8.8,alto
+2024-03-18,10.0,muy alto,7.8,medio,7.3,medio
+2024-03-25,10.1,muy alto,7.2,medio,8.0,medio
+2024-04-01,9.1,alto,8.0,medio,9.4,alto
+2024-04-08,9.1,alto,6.9,medio,9.1,alto
+2024-04-15,9.9,muy alto,7.9,medio,7.0,medio
+2024-04-22,9.7,alto,7.5,medio,6.7,medio
+2024-04-29,11.0,muy alto,8.5,alto,6.6,medio
+2024-05-06,10.5,muy alto,8.4,alto,7.4,medio
+2024-05-13,11.2,muy alto,8.9,alto,6.5,medio
+2024-05-20,11.0,muy alto,8.5,alto,5.6,bajo
+2024-05-27,10.4,muy alto,8.4,alto,5.9,bajo
+2024-06-03,10.5,muy alto,8.4,alto,5.4,bajo
+2024-06-10,10.8,muy alto,8.2,medio,6.4,medio
+2024-06-17,10.7,muy alto,7.4,medio,7.0,medio
+2024-06-24,11.6,muy alto,7.9,medio,8.0,medio
 2024-07-01,11.6,muy alto,8.3,alto,8.5,alto
-2024-07-08,11.1,muy alto,8.3,alto,9.8,muy alto
-2024-07-15,11.1,muy alto,9.1,muy alto,8.4,alto
-2024-07-22,10.0,muy alto,7.7,alto,7.6,alto
-2024-07-29,8.7,muy alto,7.7,alto,6.9,alto
-2024-08-05,8.8,muy alto,8.5,alto,7.2,alto
-2024-08-12,8.9,muy alto,8.2,alto,7.1,alto
-2024-08-19,9.1,muy alto,7.8,alto,5.8,medio
-2024-08-26,8.4,alto,7.7,alto,4.8,bajo
-2024-09-02,7.9,alto,6.9,alto,5.0,bajo
-2024-09-09,8.1,alto,7.9,alto,4.7,bajo
-2024-09-16,9.3,muy alto,8.9,muy alto,5.3,medio
-2024-09-23,8.8,muy alto,6.8,alto,5.0,bajo
-2024-09-30,7.8,alto,6.3,medio,5.2,medio
-2024-10-07,7.4,alto,6.5,medio,4.9,bajo
-2024-10-14,7.5,alto,6.0,medio,5.5,medio
-2024-10-21,6.9,alto,6.1,medio,5.5,medio
-2024-10-28,8.0,alto,6.3,medio,5.9,medio
-2024-11-04,6.2,medio,6.1,medio,5.6,medio
-2024-11-11,7.1,alto,6.8,alto,5.6,medio
+2024-07-08,11.1,muy alto,8.3,alto,9.8,alto
+2024-07-15,11.1,muy alto,9.1,alto,8.4,alto
+2024-07-22,10.0,muy alto,7.7,medio,7.6,medio
+2024-07-29,8.7,alto,7.7,medio,6.9,medio
+2024-08-05,8.8,alto,8.5,alto,7.2,medio
+2024-08-12,8.9,alto,8.2,medio,7.1,medio
+2024-08-19,9.1,alto,7.8,medio,5.8,bajo
+2024-08-26,8.4,alto,7.7,medio,4.8,bajo
+2024-09-02,7.9,medio,6.9,medio,5.0,bajo
+2024-09-09,8.1,medio,7.9,medio,4.7,bajo
+2024-09-16,9.3,alto,8.9,alto,5.3,bajo
+2024-09-23,8.8,alto,6.8,medio,5.0,bajo
+2024-09-30,7.8,medio,6.3,medio,5.2,bajo
+2024-10-07,7.4,medio,6.5,medio,4.9,bajo
+2024-10-14,7.5,medio,6.0,bajo,5.5,bajo
+2024-10-21,6.9,medio,6.1,bajo,5.5,bajo
+2024-10-28,8.0,medio,6.3,medio,5.9,bajo
+2024-11-04,6.2,medio,6.1,bajo,5.6,bajo
+2024-11-11,7.1,medio,6.8,medio,5.6,bajo
 2024-11-18,6.5,medio,6.3,medio,6.4,medio
-2024-11-25,5.7,medio,5.8,medio,6.2,medio
-2024-12-02,5.5,medio,5.8,medio,7.2,alto
-2024-12-09,5.7,medio,5.4,medio,7.7,alto
-2024-12-16,5.4,medio,6.1,medio,5.6,medio
-2024-12-23,6.2,medio,6.3,medio,7.0,alto
-2024-12-30,6.7,alto,6.2,medio,7.3,alto
-2025-01-06,5.4,medio,5.6,medio,5.8,medio
-2025-01-13,6.0,medio,5.7,medio,7.1,alto
-2025-01-20,6.5,medio,5.8,medio,5.3,medio
+2024-11-25,5.7,bajo,5.8,bajo,6.2,medio
+2024-12-02,5.5,bajo,5.8,bajo,7.2,medio
+2024-12-09,5.7,bajo,5.4,bajo,7.7,medio
+2024-12-16,5.4,bajo,6.1,bajo,5.6,bajo
+2024-12-23,6.2,medio,6.3,medio,7.0,medio
+2024-12-30,6.7,medio,6.2,medio,7.3,medio
+2025-01-06,5.4,bajo,5.6,bajo,5.8,bajo
+2025-01-13,6.0,bajo,5.7,bajo,7.1,medio
+2025-01-20,6.5,medio,5.8,bajo,5.3,bajo

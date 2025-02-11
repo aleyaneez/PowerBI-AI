@@ -1,23 +1,60 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Document, Page } from "react-pdf";
-import { PDFContext, PageObservation } from "../context/PDFContext";
+import { PDFContext } from "../context/PDFContext";
+import { parseFilename } from "../utils/parseFilename";
 import ExportButton from "../components/ExportButton";
 import PageCard from "../components/PageCard";
 
+let hasFetched = false;
+
 const Reports: React.FC = () => {
-  const { pdfFile, observations, setObservations } = useContext(PDFContext);
+  const { pdfFile, observations, setObservations, setExcludes } = useContext(PDFContext);
   const [numPages, setNumPages] = useState<number>(0);
+  const [finalPdfUrl, setFinalPdfUrl] = useState<string>("");
 
   useEffect(() => {
-    if (pdfFile && numPages > 0 && observations.length === 0) {
-      const initObs: PageObservation[] = Array.from({ length: numPages }, (_, i) => ({
-        pageNumber: i + 1,
-        observation: "",
-        approved: false,
-      }));
-      setObservations(initObs);
-    }
-  }, [pdfFile, numPages, observations, setObservations]);
+    if (!pdfFile || observations.length > 0 || hasFetched) return;
+    
+    const fetchObservations = async () => {
+      let company = "";
+      let week = "";
+      let pdfName = "";
+      try {
+        const filename = pdfFile.split("/").pop() || "";
+        const parsed = parseFilename(filename);
+        company = parsed.company;
+        week = parsed.week;
+        pdfName = company;
+      } catch (error) {
+        console.error("Error al extraer company y week:", error);
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append("company", company);
+      formData.append("week", week);
+      formData.append("pdfName", pdfName);
+      try {
+        const response = await fetch("http://localhost:8000/finalize", {
+          method: "POST",
+          body: formData,
+        });
+        if (!response.ok) {
+          throw new Error("Error en la generación de observaciones");
+        }
+        const data = await response.json();
+        console.log("Datos recibidos:", data);
+        setObservations(data.observations);
+        setExcludes(data.excludes);
+        setFinalPdfUrl(data.final_pdf_url);
+        hasFetched = true;
+      } catch (error) {
+        console.error("Error al obtener observaciones:", error);
+      }
+    };
+
+    fetchObservations();
+  }, [pdfFile, observations.length, setObservations, setExcludes]);
 
   if (!pdfFile) {
     return <p className="text-primary">No se ha subido ningún PDF.</p>;
@@ -42,7 +79,7 @@ const Reports: React.FC = () => {
       {/* Vista preliminar del PDF */}
       <div className="bg-white shadow rounded p-4 mb-6">
         <Document
-          file={pdfFile}
+          file={finalPdfUrl ? finalPdfUrl : pdfFile}
           onLoadSuccess={({ numPages }) => setNumPages(numPages)}
           onLoadError={(error) => console.error("Error al cargar el PDF:", error)}
         >
@@ -54,12 +91,12 @@ const Reports: React.FC = () => {
         </Document>
       </div>
 
-      {/* Renderizar las tarjetas con observaciones */}
-      <PageCard excludes={excludes} />
+      {/* Renderizar las tarjetas con observaciones con desplazamiento horizontal */}
+      <PageCard />
 
-      {/* Botón para exportar el PDF final y actualizar observaciones/exclusiones en el contexto */}
+      {/* Botón para exportar el PDF final; al hacer clic se abre en una nueva pestaña */}
       <div className="flex justify-center">
-        <ExportButton />
+        <ExportButton finalPdfUrl={finalPdfUrl} />
       </div>
     </div>
   );
