@@ -47,7 +47,7 @@ const DragDrop: React.FC<DragDropProps> = ({ onFileAccepted }) => {
     >
       <input {...getInputProps()} />
       {isDragActive ? (
-        <Button text="Suéltalo" icon={<FileUp size={20} />} className="cursor-pointer h-14" />
+        <Button text="Suéltalo" icon={<FileUp size={20} />} className="gap-2 px-10 py-4" />
       ) : (
         <div>
           <Button text="Selecciona el PDF" icon={<FileUp size={20} />} className="gap-2 px-10 py-4" />

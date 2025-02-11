@@ -2,7 +2,7 @@ import os
 import shutil
 from folders import buildFolder
 from jsonUtils import loadJSON
-from runObservations import insertObsPDF
+from runObservations import insertObsPDF, generateObservations, insertObservationsIntoPDF
 import json
 import globals
 
@@ -53,3 +53,21 @@ class ReportGenerator:
             self.week
         )
         return obs
+    
+    def generateObservations(self):
+        obsList = generateObservations(
+            pdfPath=self.pdfPath,
+            csvFolder=self.csvFolder,
+            excludePages=self.excludePages,
+            company=self.company,
+            context=self.contextJSON,
+            week=self.week,
+        )
+        return obsList
+    
+    def applyObservations(self, obsList):
+        insertObservationsIntoPDF(
+            pdfPath=self.pdfPath,
+            outputPDF=self.outputPDF,
+            observations=obsList
+        )

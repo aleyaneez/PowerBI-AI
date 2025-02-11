@@ -10,41 +10,47 @@ import Loading from "../components/Loading";
 let hasFetched = false;
 
 const Reports: React.FC = () => {
-  const { pdfFile, observations, setObservations, setExcludes, setPngUrls } = useContext(PDFContext);
-  const [finalPdfUrl, setFinalPdfUrl] = useState<string>("");
+  const {
+    pdfFile,
+    observations,
+    setObservations,
+    setExcludes,
+    setPngUrls,
+    company,
+    setCompany,
+    week,
+    setWeek,
+    setPdfName,
+  } = useContext(PDFContext);
+
   const [companyName, setCompanyName] = useState<string>("");
   const [displayWeek, setDisplayWeek] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!pdfFile || observations.length > 0 || hasFetched) return;
-    
+
     const fetchObservations = async () => {
       const startTime = performance.now();
-      let company = "";
-      let week = "";
-      let pdfName = "";
+
       try {
         const filename = pdfFile.split("/").pop() || "";
         const parsed = parseFilename(filename);
-        company = parsed.company;
-        const displayName = getCompanyDisplayName(company);
-        setCompanyName(displayName);
-        week = parsed.week;
-        setDisplayWeek(week);
-        pdfName = company;
-      } catch (error) {
-        console.error("Error al extraer company y week:", error);
-        return;
-      }
-      
-      const formData = new FormData();
-      formData.append("company", company);
-      formData.append("week", week);
-      formData.append("pdfName", pdfName);
-      setIsLoading(true);
-      try {
-        const response = await fetch("http://localhost:8000/finalize", {
+
+        setCompany(parsed.company);
+        setWeek(parsed.week);
+        setPdfName(parsed.company);
+
+        setCompanyName(getCompanyDisplayName(parsed.company));
+        setDisplayWeek(parsed.week);
+
+        const formData = new FormData();
+        formData.append("company", parsed.company);
+        formData.append("week", parsed.week);
+        formData.append("pdfName", parsed.company);
+
+        setIsLoading(true);
+        const response = await fetch("http://localhost:8000/generate-observations", {
           method: "POST",
           body: formData,
         });
@@ -52,22 +58,35 @@ const Reports: React.FC = () => {
           throw new Error("Error en la generación de observaciones");
         }
         const data = await response.json();
-        const endTime = performance.now();
-        setIsLoading(false);
+
         console.log("Datos recibidos:", data);
         setObservations(data.observations);
         setExcludes(data.excludes);
-        setFinalPdfUrl(data.final_pdf_url);
         setPngUrls(data.png_urls);
+        
+        const endTime = performance.now();
         console.log(`Tiempo de respuesta: ${(endTime - startTime).toFixed(2)} ms`);
+        
+        setIsLoading(false);
         hasFetched = true;
+
       } catch (error) {
         console.error("Error al obtener observaciones:", error);
+        setIsLoading(false);
       }
     };
 
     fetchObservations();
-  }, [pdfFile, observations.length, setObservations, setExcludes, setPngUrls]);
+  }, [
+    pdfFile,
+    observations.length,
+    setObservations,
+    setExcludes,
+    setPngUrls,
+    setCompany,
+    setWeek,
+    setPdfName
+  ]);
 
   if (!pdfFile) {
     return <p className="text-primary">No se ha subido ningún PDF.</p>;
@@ -79,13 +98,15 @@ const Reports: React.FC = () => {
         <Loading />
       ) : (
         <>
-          <h1 className="text-xl font-bold text-primary">Reporte de {capitalize(companyName)} semana {displayWeek}</h1>
+          <h1 className="text-xl font-bold text-primary">
+            Reporte de {capitalize(companyName)} semana {displayWeek}
+          </h1>
           {/* Renderizar las tarjetas con imágenes PNG y observaciones */}
           <PageCard />
 
           {/* Botón para exportar el PDF final; al hacer clic se abre en una nueva pestaña */}
           <div className="flex justify-center">
-            <ExportButton finalPdfUrl={finalPdfUrl} />
+            <ExportButton company={company} week={week} />
           </div>
         </>
       )}
