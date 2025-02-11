@@ -1,5 +1,6 @@
 {
     "Cliente": "Albemarle",
+    "Excludes": [0, 6, 7, 10, 12, 13, 16],
     "Graficos": [
         {
             "Pagina": "2",

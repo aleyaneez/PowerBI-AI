@@ -13,6 +13,8 @@ export interface PDFContextProps {
   setObservations: React.Dispatch<React.SetStateAction<PageObservation[]>>;
   excludes: number[];
   setExcludes: React.Dispatch<React.SetStateAction<number[]>>;
+  pngUrls: string[];
+  setPngUrls: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const PDFContext = createContext<PDFContextProps>({
@@ -22,4 +24,6 @@ export const PDFContext = createContext<PDFContextProps>({
   setObservations: () => {},
   excludes: [],
   setExcludes: () => {},
+  pngUrls: [],
+  setPngUrls: () => {},
 });

@@ -5,9 +5,7 @@ import App from './App.tsx'
 import PDFProvider from './context/PDFProvider.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <PDFProvider>
-      <App />
-    </PDFProvider>
-  </StrictMode>,
+  <PDFProvider>
+    <App />
+  </PDFProvider>
 )

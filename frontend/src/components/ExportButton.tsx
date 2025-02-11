@@ -20,7 +20,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ finalPdfUrl }) => {
       <Button
         text="Exportar PDF"
         onClick={handleExport}
-        className="mt-4"
+        className="gap-2 px-10 py-4"
         icon={<FileDown size={20} />}
       />
     </div>

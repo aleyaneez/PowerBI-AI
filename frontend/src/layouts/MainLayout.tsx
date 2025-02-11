@@ -7,9 +7,9 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen">
       <Navbar />
-      <main className="flex-grow p-12 mt-18">{children}</main>
+      <main className="flex-grow p-10">{children}</main>
     </div>
   );
 };

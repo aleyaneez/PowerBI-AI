@@ -9,6 +9,7 @@ const PDFProvider: React.FC<PDFProviderProps> = ({ children }) => {
   const [pdfFile, setPdfFile] = useState<string | null>(null);
   const [observations, setObservations] = useState<PageObservation[]>([]);
   const [excludes, setExcludes] = useState<number[]>([]);
+  const [pngUrls, setPngUrls] = useState<string[]>([]);
 
   return (
     <PDFContext.Provider
@@ -19,6 +20,8 @@ const PDFProvider: React.FC<PDFProviderProps> = ({ children }) => {
         setObservations,
         excludes,
         setExcludes,
+        pngUrls,
+        setPngUrls,
       }}
     >
       {children}

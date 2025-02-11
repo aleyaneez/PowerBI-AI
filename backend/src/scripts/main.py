@@ -3,7 +3,7 @@ import uvicorn
 import os
 import shutil
 import json
-import io
+import time
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,6 +37,8 @@ async def upload_pdf(file: UploadFile = File(...)):
     """
     Recibe el PDF y lo guarda en UPLOAD_DIR.
     """
+    # Cronometrar el tiempo de subida del archivo
+    startTime = time.time()
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Solo se permiten archivos PDF.")
     
@@ -45,6 +47,9 @@ async def upload_pdf(file: UploadFile = File(...)):
     print(f'Upload dir: {UPLOAD_DIR}')
     with open(filePath, "wb") as f:
         f.write(await file.read())
+    
+    endTime = time.time()
+    print(f"Archivo subido en {endTime - startTime:.2f} segundos.")
     
     return {"filename": file.filename, "filePath": filePath}
 
@@ -58,6 +63,7 @@ async def finalize_pdf(
     Recibe el PDF subido, extrae company y week, copia el PDF a la carpeta destino,
     ejecuta CSVExporter.export() y ReportGenerator.generateReport(), y devuelve el PDF final.
     """
+    startTime = time.time()
     temp_path = os.path.join(UPLOAD_DIR, f"{company}_{week}.pdf")
     if not os.path.exists(temp_path):
         raise HTTPException(status_code=404, detail="El PDF subido no se encontró en la carpeta temporal.")
@@ -67,17 +73,18 @@ async def finalize_pdf(
     dest_pdf_path = os.path.join(base_path, f"{company}_{week}.pdf")
     shutil.copy2(temp_path, dest_pdf_path)
     print(f"PDF copiado a {dest_pdf_path}")
+    
+    # Extrae la lista de páginas a excluir y los niveles de riesgo desde el config
+    config_path = os.path.join(base_path, "config.json")
+    excludes = getExcludes(config_path)
 
     # Llama a CSVExporter para generar los CSV necesarios a partir del PDF y config.json
     exporter = CSVExporter(company, week)
     try:
         exporter.export()
+        exporter.exportPNG(dest_pdf_path)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error exportando CSV: {e}")
-
-    # Extrae la lista de páginas a excluir y los niveles de riesgo desde el config
-    config_path = os.path.join(base_path, "config.json")
-    excludes = getExcludes(config_path)
     
     metadataPathParent = os.path.join(base_path, '..', 'metadata.json')
     if not os.path.exists(metadataPathParent):
@@ -97,8 +104,11 @@ async def finalize_pdf(
     # Instancia ReportGenerator y genera el PDF final con observaciones insertadas
     output_pdf_name = f"{pdfName}_output.pdf"
     try:
+        reportStart = time.time()
         reportGen = ReportGenerator(company, week, company, excludes, riesgo, output_pdf_name)
         obsList = reportGen.generateReport()
+        reportEnd = time.time()
+        print(f"Reporte generado en {reportEnd - reportStart:.2f} segundos.")
     except Exception as e:
         print(f"Error generando el reporte: {e}")
         raise HTTPException(status_code=500, detail=f"Error generando el reporte: {e}")
@@ -108,11 +118,47 @@ async def finalize_pdf(
     shutil.copy2(os.path.join(base_path, output_pdf_name), public_pdf_path)
     final_pdf_url = f"http://localhost:8000/uploads/{output_pdf_name}"
     
+    # Directorio de destino para las PNG dentro de UPLOAD_DIR
+    pngDir = os.path.join(UPLOAD_DIR, "png", company, week)
+    os.makedirs(pngDir, exist_ok=True)
+
+    if os.path.exists(exporter.outputPNG):
+        for file in os.listdir(exporter.outputPNG):
+            if file.lower().endswith('.png'):
+                src = os.path.join(exporter.outputPNG, file)
+                dst = os.path.join(pngDir, file)
+                shutil.copy2(src, dst)
+    else:
+        raise HTTPException(status_code=500, detail="No se encontraron imágenes PNG generadas.")
+
+    # Luego, construir las URLs basadas en pngDir
+    pngFiles = [f for f in os.listdir(pngDir) if f.lower().endswith('.png')]
+    def extractPage(filename):
+        try:
+            parts = filename.split('_')
+            numStr = parts[-1].split('.')[0]
+            return int(numStr)
+        except Exception as e:
+            print(f"Error extrayendo número de página de {filename}: {e}")
+            return 0
+
+    pngFilesSorted = sorted(pngFiles, key=extractPage)
+    pngUrls = []
+    for file in pngFilesSorted:
+        fullPath = os.path.join(pngDir, file)
+        relPath = os.path.relpath(fullPath, UPLOAD_DIR)
+        url = f"http://localhost:8000/uploads/{relPath.replace(os.path.sep, '/')}"
+        pngUrls.append(url)
+    
+    endTime = time.time()
+    print(f"Reporte completo generado en {endTime - startTime:.2f} segundos.")
+    
     # Retornar JSON con la URL del PDF final, el listado de observaciones y el array de exclusiones
     return {
         "final_pdf_url": final_pdf_url,
         "observations": obsList,
-        "excludes": excludes
+        "excludes": excludes,
+        "png_urls": pngUrls
     }
 
 if __name__ == '__main__':

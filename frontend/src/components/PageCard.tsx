@@ -1,56 +1,36 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { PDFContext } from '../context/PDFContext';
-import { pdfjs, Page } from 'react-pdf';
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url
-).toString();
+import PageContainer from './PageContainer';
 
 const PageCard: React.FC = () => {
-  const { pdfFile, observations, excludes } = useContext(PDFContext);
-  console.log("pdfFile:", pdfFile);
-  const [pdfDoc, setPdfDoc] = useState<any>(null);
+  const { pngUrls, observations, excludes } = useContext(PDFContext);
 
-  useEffect(() => {
-    if (pdfFile) {
-      pdfjs.getDocument({ url: pdfFile, withCredentials: false}).promise
-        .then((loadedPdf: any) => {
-          console.log("PDF cargado:", loadedPdf);
-          setPdfDoc(loadedPdf);
-        })
-        .catch((error: any) => {
-          console.error("Error al cargar el PDF:", error);
-        });
-    }
-  }, [pdfFile]);
-
-  if (!pdfFile || !pdfDoc) return null;
-
-  const totalPages = pdfDoc.numPages;
-  console.log("Número de páginas:", totalPages);
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  if (!pngUrls || pngUrls.length === 0) return <p>No se han generado imágenes.</p>;
 
   return (
-    <div className="flex overflow-x-auto space-x-4 p-4">
-      {pages.map((pageNumber) => {
+    <div className="flex overflow-x-auto snap-x snap-mandatory w-full pb-4"
+      style={{ scrollSnapType: "x mandatory" }}
+    >
+      {pngUrls.map((url, index) => {
+        const pageNumber = index + 1;
         const obs = observations.find(o => o.pageNumber === pageNumber) || {
           pageNumber,
           observation: "",
           approved: false
         };
-        const isExcluded = excludes.includes(pageNumber);
+        const isExcluded = excludes.includes(pageNumber - 1);
         return (
-          <div key={pageNumber} className="min-w-[300px] border p-4 m-2 rounded shadow">
-            <h3 className="text-center font-bold">Página {pageNumber}</h3>
-            <div className="border mb-2">
-              <Page pdf={pdfDoc} pageNumber={pageNumber} width={280} />
-            </div>
-            {!isExcluded && (
-              <div className="p-2 border rounded bg-gray-100">
-                <p className="text-sm text-center">{obs.observation || "Sin observación"}</p>
-              </div>
-            )}
+          <div
+            key={pageNumber}
+            className="snap-center flex-shrink-0 w-full"
+          >
+          <PageContainer
+            key={pageNumber}
+            pageNumber={pageNumber}
+            pngUrl={url}
+            observation={obs.observation}
+            excluded={isExcluded}
+          />
           </div>
         );
       })}
@@ -58,4 +38,4 @@ const PageCard: React.FC = () => {
   );
 };
 
-export default PageCard;
+export default PageCard;  
