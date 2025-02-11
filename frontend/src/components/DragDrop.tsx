@@ -26,7 +26,7 @@ const DragDrop: React.FC<DragDropProps> = ({ onFileAccepted }) => {
         }
         const result = await response.json();
         console.log("PDF subido:", result);
-        const publicURL = `http://localhost:8000/uploads/${result.filename}`;
+        const publicURL = `http://localhost:8000/uploads/${result.filename.toLowerCase()}`;
         onFileAccepted(publicURL);
         navigate("/reports");
       } catch (error) {
@@ -50,7 +50,7 @@ const DragDrop: React.FC<DragDropProps> = ({ onFileAccepted }) => {
         <Button text="Suéltalo" icon={<FileUp size={20} />} className="cursor-pointer h-14" />
       ) : (
         <div>
-          <Button text="Selecciona el PDF" icon={<FileUp size={20} />} className="cursor-pointer h-14" />
+          <Button text="Selecciona el PDF" icon={<FileUp size={20} />} className="gap-2 px-10 py-4" />
           <p className="text-primary text-sm mt-2">o arrástralo y suéltalo aquí</p>
         </div>
       )}

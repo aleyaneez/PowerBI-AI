@@ -1,5 +1,8 @@
 import json
 import os
+from Abastible.json import abastibleJSON
+from Albemarle.json import albemarleJSON
+from Enex.json import enexJSON
 
 def loadJSON(path: str) -> dict:
     if not os.path.exists(path):
@@ -15,3 +18,16 @@ def getExcludes(path: str) -> list:
 def getRiesgo(path: str) -> dict:
     config = loadJSON(path)
     return config.get("Informacion", {}).get("Niveles de Riesgo", {})
+
+def getMetas(path: str) -> dict:
+    config = loadJSON(path)
+    return config.get("Informacion", {}).get("Metas RAEV/100", {})
+
+def getMetadata(cliente):
+    if cliente.lower() == "abastible_consolidado":
+        return abastibleJSON
+    elif cliente.lower() == "albemarle":
+        return albemarleJSON
+    elif cliente.lower() == "enex":
+        return enexJSON
+    raise ValueError(f"No se encontró metadata para cliente {cliente}.")

@@ -1,6 +1,4 @@
 import pandas as pd
-import numpy as np
-import json
 from globals import RIESGO, capitalizePalabras
 
 def abastibleJSON(df: pd.DataFrame, company: str) -> dict:
