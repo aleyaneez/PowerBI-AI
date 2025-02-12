@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { PDFContext } from "../context/PDFContext";
 import Button from './Button';
+import ConfirmationDialog from './ConfirmationDialog';
 import { FileDown } from 'lucide-react';
 
 interface ExportButtonProps {
@@ -9,9 +10,10 @@ interface ExportButtonProps {
 }
 
 const ExportButton: React.FC<ExportButtonProps> = ({ company, week }) => {
-  const { pdfFile, observations } = useContext(PDFContext);
+  const { pdfFile, observations, excludes } = useContext(PDFContext);
+  const [showDialog, setShowDialog] = useState(false);
 
-  const handleExport = async () => {
+  const exportPdf = async () => {
     if (!pdfFile) {
       alert("No hay PDF cargado.");
       return;
@@ -47,6 +49,27 @@ const ExportButton: React.FC<ExportButtonProps> = ({ company, week }) => {
     }
   };
 
+  const allApproved = observations
+    .filter(obs => !excludes.includes(obs.pageNumber - 1))
+    .every(obs => obs.approved === true);
+  
+    const handleExport = () => {
+      if (allApproved) {
+        exportPdf();
+      } else {
+        setShowDialog(true);
+      }
+    };
+
+    const handleConfirm = () => {
+      setShowDialog(false);
+      exportPdf();
+    };
+
+    const handleCancel = () => {
+      setShowDialog(false);
+    };
+
   return (
     <div>
       <Button
@@ -55,6 +78,15 @@ const ExportButton: React.FC<ExportButtonProps> = ({ company, week }) => {
         className="gap-2 px-10 py-4"
         icon={<FileDown size={20} />}
       />
+
+
+      {showDialog && (
+        <ConfirmationDialog
+          message="¿Estás seguro que quieres exportar? Quedan observaciones sin aprobar."
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
     </div>
   );
 };

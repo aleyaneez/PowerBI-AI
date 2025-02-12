@@ -16,6 +16,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
   excluded
 }) => {
   const {
+    observations,
     setObservations,
     company,
     week,
@@ -27,7 +28,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
     setObservations(prev =>
       prev.map(obs =>
         obs.pageNumber === pageNumber
-          ? { ...obs, approved: true }
+          ? { ...obs, approved: !obs.approved }
           : obs
       )
     );
@@ -38,7 +39,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
     setObservations(prev =>
       prev.map(obs =>
         obs.pageNumber === pageNumber
-          ? { ...obs, observation: newValue }
+          ? { ...obs, observation: newValue, approved: false }
           : obs
       )
     );
@@ -50,7 +51,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
     setObservations(prev =>
       prev.map(obs =>
         obs.pageNumber === pageNumber
-          ? { ...obs, observation: "" }
+          ? { ...obs, observation: "", approved: false }
           : obs
       )
     );
@@ -79,7 +80,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
       setObservations(prev =>
         prev.map(obs =>
           obs.pageNumber === data.pageNumber
-            ? { ...obs, observation: data.newObservation }
+            ? { ...obs, observation: data.newObservation, approved: false }
             : obs
         )
       );
@@ -89,6 +90,9 @@ const PageContainer: React.FC<PageContainerProps> = ({
       alert("Error al regenerar la observación.");
     }
   };
+
+  const obsData = observations.find(obs => obs.pageNumber === pageNumber);
+  const isApproved = obsData?.approved ?? false;
 
   return (
     <div className="min-w-[300px]">
@@ -106,6 +110,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
       {!excluded && (
         <ObservationCard
           observation={observation}
+          approved={isApproved}
           onApprove={handleApprove}
           onDelete={handleDelete}
           onRegenerate={handleRegenerate}

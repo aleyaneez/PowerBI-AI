@@ -5,6 +5,7 @@ import Regenerate from './Regenerate';
 
 interface ObservationCardProps {
   observation: string;
+  approved: boolean;
   onApprove?: () => void;
   onRegenerate?: () => void;
   onDelete?: () => void;
@@ -13,6 +14,7 @@ interface ObservationCardProps {
 
 const ObservationCard: React.FC<ObservationCardProps> = ({
   observation,
+  approved = false,
   onApprove,
   onDelete,
   onRegenerate,
@@ -48,9 +50,11 @@ const ObservationCard: React.FC<ObservationCardProps> = ({
     }
   };
 
+  const borderColor = approved ? 'border-emerald-600' : 'border-slate-400';
+
   return (
     <div className="flex flex-row items-center mt-4 justify-between">
-      <div className="p-4 border rounded-xl border-slate-400 h-28 w-full text-primary">
+      <div className={`p-4 border rounded-xl h-28 w-full text-primary ${borderColor}`}>
         {isEditing ? (
           <textarea
             ref={textareaRef}
