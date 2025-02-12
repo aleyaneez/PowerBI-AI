@@ -10,7 +10,7 @@ const LoadingContainer: React.FC<LoadingContainerProps> = ({color, size}) => {
     return (
         <div className="flex flex-col justify-center items-center h-full space-y-8">
             <h2 className="text-xl text-primary font-bold">Generando PDF</h2>
-            <p className="text-primary">Este proceso puede tardar hasta más de un minuto...</p>
+            <p className="text-primary">Este proceso puede tardar unos pocos minutos...</p>
             <Loading color={color} size={size} />
         </div>
     );

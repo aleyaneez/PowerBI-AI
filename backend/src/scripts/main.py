@@ -193,6 +193,7 @@ async def regenerate_observation(
     {json.dumps(contextJSON, indent=2, ensure_ascii=False)}
     """
 
+    print("Regenerando observación...")
     run, messages, msg_inicial = generateObservation(prompt)
     if run is None or run.status != "completed":
         raise HTTPException(status_code=500, detail="No se logró completar la respuesta de IA.")
@@ -202,6 +203,7 @@ async def regenerate_observation(
         if msg.role == "assistant":
             new_observation = msg.content[0].text.value.replace("Santiago","Disponibles")
             break
+    print("Observación generada:", new_observation)
 
     # Retornar la nueva observación
     return {
