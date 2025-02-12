@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { PDFContext } from '../context/PDFContext';
 import ObservationCard from './ObservationCard';
+import Loading from './Loading';
 
 interface PageContainerProps {
   pageNumber: number;
@@ -22,6 +23,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
     week,
     pdfName,
   } = useContext(PDFContext);
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   // Aprobar
   const handleApprove = () => {
@@ -61,6 +63,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
   // Regenerar
   const handleRegenerate = async () => {
     try {
+      setIsRegenerating(true);
       const formData = new FormData();
       formData.append("company", company);
       console.log("Company:", company);
@@ -88,6 +91,8 @@ const PageContainer: React.FC<PageContainerProps> = ({
     } catch (error) {
       console.error(error);
       alert("Error al regenerar la observación.");
+    } finally {
+      setIsRegenerating(false);
     }
   };
 
@@ -108,14 +113,24 @@ const PageContainer: React.FC<PageContainerProps> = ({
         />
       </div>
       {!excluded && (
-        <ObservationCard
-          observation={observation}
-          approved={isApproved}
-          onApprove={handleApprove}
-          onDelete={handleDelete}
-          onRegenerate={handleRegenerate}
-          onEdit={handleEdit}
-        />
+        isRegenerating ? (
+          <div className="flex flex-col mt-12 justify-center items-center space-y-4">
+            <h4 className="text-base text-primary font-semibold">Regenerando observación...</h4>
+            <Loading
+              color="#283575"
+              size={8}
+            />
+          </div>
+        ) : (
+          <ObservationCard
+            observation={observation}
+            approved={isApproved}
+            onApprove={handleApprove}
+            onDelete={handleDelete}
+            onRegenerate={handleRegenerate}
+            onEdit={handleEdit}
+          />
+        )
       )}
     </div>
   );

@@ -54,7 +54,7 @@ const ObservationCard: React.FC<ObservationCardProps> = ({
 
   return (
     <div className="flex flex-row items-center mt-4 justify-between">
-      <div className={`p-4 border rounded-xl h-28 w-full text-primary ${borderColor}`}>
+      <div className={`p-4 border rounded-xl h-34 w-full text-primary ${borderColor}`}>
         {isEditing ? (
           <textarea
             ref={textareaRef}
@@ -77,7 +77,7 @@ const ObservationCard: React.FC<ObservationCardProps> = ({
       </div>
       
       {/* Botones de acción (Aprobar, Eliminar, Regenerar) */}
-      <div className="flex flex-col items-center justify-center gap-1 ml-4">
+      <div className="flex flex-col items-center justify-center gap-2 ml-4">
         <Approve onClick={onApprove} />
         <Delete onClick={onDelete} />
         <Regenerate onClick={onRegenerate} />

@@ -49,10 +49,17 @@ const ExportButton: React.FC<ExportButtonProps> = ({ company, week }) => {
     }
   };
 
-  const allApproved = observations
+  const unapprovedCount = observations
     .filter(obs => !excludes.includes(obs.pageNumber - 1))
-    .every(obs => obs.approved === true);
-  
+    .filter(obs => !obs.approved)
+    .length;
+
+  const allApproved = unapprovedCount === 0;
+
+  const messageBody = unapprovedCount === 1
+    ? <>¿Estás seguro que quieres exportar? Queda <strong>una</strong> observación sin aprobar.</>
+    : <>¿Estás seguro que quieres exportar? Quedan <strong>{unapprovedCount}</strong> observaciones sin aprobar.</>;
+
     const handleExport = () => {
       if (allApproved) {
         exportPdf();
@@ -82,7 +89,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ company, week }) => {
 
       {showDialog && (
         <ConfirmationDialog
-          message="¿Estás seguro que quieres exportar? Quedan observaciones sin aprobar."
+          message={messageBody}
           onConfirm={handleConfirm}
           onCancel={handleCancel}
         />

@@ -5,7 +5,7 @@ import ExportButton from "../components/ExportButton";
 import PageCard from "../components/PageCard";
 import { getCompanyDisplayName } from "../utils/companyDictionary";
 import { capitalize } from "../utils/capitalize";
-import Loading from "../components/Loading";
+import LoadingContainer from "../components/LoadingContainer";
 
 let hasFetched = false;
 
@@ -95,7 +95,10 @@ const Reports: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto justify-center items-center flex flex-col">
       {isLoading ? (
-        <Loading />
+        <LoadingContainer
+          color="#283575"
+          size={16}
+        />
       ) : (
         <>
           <h1 className="text-xl font-bold text-primary">
