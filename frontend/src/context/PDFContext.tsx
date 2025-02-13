@@ -15,6 +15,13 @@ export interface PDFContextProps {
   setExcludes: React.Dispatch<React.SetStateAction<number[]>>;
   pngUrls: string[];
   setPngUrls: React.Dispatch<React.SetStateAction<string[]>>;
+
+  company: string;
+  setCompany: React.Dispatch<React.SetStateAction<string>>;
+  week: string;
+  setWeek: React.Dispatch<React.SetStateAction<string>>;
+  pdfName: string;
+  setPdfName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const PDFContext = createContext<PDFContextProps>({
@@ -26,4 +33,10 @@ export const PDFContext = createContext<PDFContextProps>({
   setExcludes: () => {},
   pngUrls: [],
   setPngUrls: () => {},
+  company: "",
+  setCompany: () => {},
+  week: "",
+  setWeek: () => {},
+  pdfName: "",
+  setPdfName: () => {},
 });

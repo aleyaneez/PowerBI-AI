@@ -1,9 +1,16 @@
 import React from 'react';
-import 'ldrs/bouncy';
+import PropagateLoader from 'react-spinners/PropagateLoader';
 
-const Loading: React.FC = () => {
+interface LoadingProps {
+    color?: string;
+    size?: number;
+};
+
+const Loading: React.FC<LoadingProps> = ({color, size}) => {
     return (
-        <l-bouncy size="45" speed="1.75" color="indigo"></l-bouncy>
+        <div className="flex justify-center items-center">
+            <PropagateLoader color={color} size={size} />
+        </div>
     );
 };
 

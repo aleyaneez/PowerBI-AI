@@ -82,6 +82,67 @@ def generateObservation(prompt):
     
     return None, None, None
 
+def generateObservations(
+    pdfPath: str,
+    csvFolder: str,
+    excludePages: list,
+    company: str,
+    context: dict,
+    week: str
+):
+    """Sólo genera las observaciones (llamadas a la IA) y devuelve la lista de observaciones,
+    sin insertarlas en el PDF.
+    """
+    doc = pymupdf.open(pdfPath)
+    totalPages = len(doc)
+    doc.close()
+
+    tasks = []
+    for p in range(totalPages):
+        if p in excludePages:
+            continue
+        numPage = p + 1
+        csvName = f"{company}_Page_{numPage}.csv"
+        csvPath = os.path.join(csvFolder, csvName)
+        if not os.path.exists(csvPath):
+            continue
+
+        csvText = csvToText(csvPath)
+        prompt = f"""Genera una observación sobre este reporte semanal de riesgo RAEV/100 de la empresa {company.capitalize()} correspondiente a la semana iniciada el {week} utilizando la tabla CSV en texto plano. En caso de existir información sobre semanas anteriores, compara la semana iniciada el {week} con las anteriores, si no existe información sobre las anteriores, omite este paso.
+        - Tabla:
+        {csvText}
+
+        - Contexto de la empresa:
+        {json.dumps(context, indent=2, ensure_ascii=False)}
+        """
+
+        tasks.append({"page": p, "csvPath": csvPath, "prompt": prompt})
+
+    responses = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        futureToPage = {
+            executor.submit(generateObsAsync, t): t["page"] for t in tasks
+        }
+        for future in concurrent.futures.as_completed(futureToPage):
+            pageIndex = futureToPage[future]
+            try:
+                page_num, assistantResponse = future.result()
+                responses[page_num] = assistantResponse
+            except Exception as exc:
+                responses[pageIndex] = f"Error: {exc}"
+
+    # Construir la lista final
+    obsList = []
+    for p in range(totalPages):
+        obsObj = {
+            "pageNumber": p + 1,
+            "observation": responses.get(p, "No se encontró observación"),
+            "excluded": p in excludePages
+        }
+        obsList.append(obsObj)
+
+    return obsList
+
 def generateObsAsync(args):
     """Generar observaciones de forma asíncrona
     """
@@ -102,6 +163,57 @@ def generateObsAsync(args):
         assistantResponse = "Error: no se completó la respuesta"
 
     return (numPage, assistantResponse)
+
+def insertObservationsIntoPDF(
+    pdfPath: str,
+    outputPDF: str,
+    observations: list,
+    marginTop: float = 15,
+    marginLeft: float = 60,
+    textBoxHeight: float = 140
+):
+    """
+    Recorre la lista de observaciones y las inserta en el PDF.
+    observations: [{ pageNumber, observation, excluded }, ...]
+    """
+    doc = pymupdf.open(pdfPath)
+    totalPages = len(doc)
+
+    for obs in observations:
+        pageIndex = obs["pageNumber"] - 1
+        if obs["excluded"] or pageIndex < 0 or pageIndex >= totalPages:
+            continue
+        
+        assistantResponse = obs["observation"]
+        page = doc.load_page(pageIndex)
+        width = page.rect.width
+        height = page.rect.height
+
+        pos = pymupdf.Rect(
+            marginLeft,
+            height - marginTop - textBoxHeight,
+            width - marginLeft,
+            height - marginTop,
+        )
+
+        fontName = "Montserrat-Regular"
+        fontFile = f"fonts/{fontName}.ttf"
+        page.insert_font(fontname=fontName, fontfile=fontFile)
+
+        print(f"Escribiendo observación en página {pageIndex + 1}")
+        try:
+            page.insert_htmlbox(
+                pos,
+                '<b>Observación:</b> ' + assistantResponse,
+                css=f"* {{font-family: {fontName}; font-size: 24px; color: #000000;}}",
+            )
+        except Exception as e:
+            print(f"Error al insertar observación en página {pageIndex + 1}: {e}")
+        print(f"Observación insertada en página {pageIndex + 1}")
+
+    doc.save(outputPDF)
+    doc.close()
+    print(f"PDF guardado con observaciones en: {outputPDF}")
 
 def insertObsPDF(
     pdfPath: str,

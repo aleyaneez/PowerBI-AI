@@ -25,7 +25,7 @@ const Home: React.FC = () => {
           Genera las observaciones de reportes semanales de RAEV/100 con inteligencia artificial, deberás subir el reporte en formato pdf que en su nombre <br /> indique el cliente a reportar seguido de la semana objetivo. ¡Puedes guiarte con los ejemplos a continuación!
         </p>
         <Examples examples={examples} interval={5000} />
-        <div className="mt-5 w-full max-w-md">
+        <div className="mt-2 w-full max-w-md">
           <DragDrop onFileAccepted={handleFileAccepted} />
         </div>
       </div>

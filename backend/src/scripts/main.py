@@ -12,6 +12,7 @@ from fastapi.staticfiles import StaticFiles
 
 from exportCSV import CSVExporter
 from reportGenerator import ReportGenerator
+from runObservations import generateObservation, csvToText
 from folders import buildFolder
 from jsonUtils import getExcludes, getRiesgo, getMetas, getMetadata
 
@@ -53,72 +54,63 @@ async def upload_pdf(file: UploadFile = File(...)):
     
     return {"filename": file.filename, "filePath": filePath}
 
-@app.post("/finalize")
-async def finalize_pdf(
+@app.post("/generate-observations")
+async def generate_observations(
     company: str = Form(...),
     week: str = Form(...),
     pdfName: str = Form(...)
 ):
     """
-    Recibe el PDF subido, extrae company y week, copia el PDF a la carpeta destino,
-    ejecuta CSVExporter.export() y ReportGenerator.generateReport(), y devuelve el PDF final.
+    Prepara CSVs, imágenes PNG, y genera observaciones (texto) pero NO inserta en el PDF.
+    Retorna las observaciones y la lista de PNGs, para que el usuario las edite/avale.
     """
     startTime = time.time()
-    temp_path = os.path.join(UPLOAD_DIR, f"{company}_{week}.pdf")
-    if not os.path.exists(temp_path):
+
+    # 1) Verificar que el PDF temporal exista
+    temp_pdf = os.path.join(UPLOAD_DIR, f"{company}_{week}.pdf")
+    if not os.path.exists(temp_pdf):
         raise HTTPException(status_code=404, detail="El PDF subido no se encontró en la carpeta temporal.")
 
-    # Crea la carpeta destino usando buildFolder y copia el PDF allí
+    # 2) Crear carpeta destino y copiar PDF
     base_path = buildFolder(company, week)
     dest_pdf_path = os.path.join(base_path, f"{company}_{week}.pdf")
-    shutil.copy2(temp_path, dest_pdf_path)
+    shutil.copy2(temp_pdf, dest_pdf_path)
     print(f"PDF copiado a {dest_pdf_path}")
-    
-    # Extrae la lista de páginas a excluir y los niveles de riesgo desde el config
+
+    # 3) Leer config.json y extraer excludes
     config_path = os.path.join(base_path, "config.json")
     excludes = getExcludes(config_path)
 
-    # Llama a CSVExporter para generar los CSV necesarios a partir del PDF y config.json
+    # 4) Generar CSV y PNG
     exporter = CSVExporter(company, week)
     try:
         exporter.export()
         exporter.exportPNG(dest_pdf_path)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error exportando CSV: {e}")
-    
+        raise HTTPException(status_code=500, detail=f"Error al exportar CSV: {e}")
+
+    # 5) Asegurarse de tener un metadata.json
     metadataPathParent = os.path.join(base_path, '..', 'metadata.json')
     if not os.path.exists(metadataPathParent):
         metadata = getMetadata(company)
         with open(metadataPathParent, 'w', encoding='utf-8') as file:
             json.dump(metadata, file, indent=4, ensure_ascii=False)
     metadataPath = metadataPathParent
-    
+
+    # 6) Obtener riesgo
     if company == 'enex':
         riesgo = getMetas(metadataPath)
     else:
         riesgo = getRiesgo(metadataPath)
 
-    print(f'Config path: {config_path}')
-    print(f'Metadata path: {metadataPath}')
-    
-    # Instancia ReportGenerator y genera el PDF final con observaciones insertadas
-    output_pdf_name = f"{pdfName}_output.pdf"
-    try:
-        reportStart = time.time()
-        reportGen = ReportGenerator(company, week, company, excludes, riesgo, output_pdf_name)
-        obsList = reportGen.generateReport()
-        reportEnd = time.time()
-        print(f"Reporte generado en {reportEnd - reportStart:.2f} segundos.")
-    except Exception as e:
-        print(f"Error generando el reporte: {e}")
-        raise HTTPException(status_code=500, detail=f"Error generando el reporte: {e}")
+    # 7) Instanciar ReportGenerator, pero solo usaremos generateObservations()
+    output_pdf_name = f"{pdfName}_output.pdf"  # Se usará más tarde
+    reportGen = ReportGenerator(company, week, company, excludes, riesgo, output_pdf_name)
 
-    # Copiar el PDF final a UPLOAD_DIR para exponerlo vía URL
-    public_pdf_path = os.path.join(UPLOAD_DIR, output_pdf_name)
-    shutil.copy2(os.path.join(base_path, output_pdf_name), public_pdf_path)
-    final_pdf_url = f"http://localhost:8000/uploads/{output_pdf_name}"
-    
-    # Directorio de destino para las PNG dentro de UPLOAD_DIR
+    # Generar solo la lista de observaciones (sin insertar en PDF)
+    obsList = reportGen.generateObservations()
+
+    # 8) Copiar PNGs a la carpeta uploads para exponerlas vía URL
     pngDir = os.path.join(UPLOAD_DIR, "png", company, week)
     os.makedirs(pngDir, exist_ok=True)
 
@@ -131,35 +123,147 @@ async def finalize_pdf(
     else:
         raise HTTPException(status_code=500, detail="No se encontraron imágenes PNG generadas.")
 
-    # Luego, construir las URLs basadas en pngDir
+    # Construir las URLs de las PNG
     pngFiles = [f for f in os.listdir(pngDir) if f.lower().endswith('.png')]
     def extractPage(filename):
         try:
             parts = filename.split('_')
             numStr = parts[-1].split('.')[0]
             return int(numStr)
-        except Exception as e:
-            print(f"Error extrayendo número de página de {filename}: {e}")
+        except Exception:
             return 0
 
     pngFilesSorted = sorted(pngFiles, key=extractPage)
     pngUrls = []
     for file in pngFilesSorted:
-        fullPath = os.path.join(pngDir, file)
-        relPath = os.path.relpath(fullPath, UPLOAD_DIR)
+        relPath = os.path.relpath(os.path.join(pngDir, file), UPLOAD_DIR)
         url = f"http://localhost:8000/uploads/{relPath.replace(os.path.sep, '/')}"
         pngUrls.append(url)
-    
+
     endTime = time.time()
-    print(f"Reporte completo generado en {endTime - startTime:.2f} segundos.")
-    
-    # Retornar JSON con la URL del PDF final, el listado de observaciones y el array de exclusiones
+    print(f"Observaciones generadas en {endTime - startTime:.2f} segundos.")
+
+    # 9) Retornar la lista de observaciones, excludes y pngUrls (aún NO hay PDF final)
     return {
-        "final_pdf_url": final_pdf_url,
         "observations": obsList,
         "excludes": excludes,
         "png_urls": pngUrls
     }
+
+@app.post("/regenerate-observation")
+async def regenerate_observation(
+    company: str = Form(...),
+    week: str = Form(...),
+    pdfName: str = Form(...),
+    pageNumber: int = Form(...),
+):
+    """
+    Regenera la observación de la página `pageNumber` (1-based) para la empresa `company`
+    en la semana `week`. Retorna la nueva observación.
+    """
+    # 1) Verificar ruta PDF y CSV
+    base_path = buildFolder(company, week)
+    dest_pdf_path = os.path.join(base_path, f"{company}_{week}.pdf")
+    if not os.path.exists(dest_pdf_path):
+        raise HTTPException(status_code=404, detail="No se encontró el PDF en la carpeta destino.")
+
+    csv_folder = os.path.join(base_path, 'table')
+    csv_file = os.path.join(csv_folder, f"{company}_Page_{pageNumber}.csv")
+    if not os.path.exists(csv_file):
+        raise HTTPException(status_code=404, detail=f"No existe CSV para la página {pageNumber}.")
+
+    metadata_path = os.path.join(base_path, '..', 'metadata.json')
+    if not os.path.exists(metadata_path):
+        raise HTTPException(status_code=500, detail="No se encontró el archivo de metadata.")
+
+    with open(metadata_path, 'r', encoding='utf-8') as f:
+        contextJSON = json.load(f)
+
+    csv_text = csvToText(csv_file)
+    prompt = f"""Genera una observación sobre este reporte semanal de riesgo RAEV/100 
+    de la empresa {company.capitalize()} correspondiente a la semana iniciada el {week} 
+    utilizando la tabla CSV en texto plano. En caso de existir información sobre semanas anteriores, 
+    compara la semana iniciada el {week} con las anteriores. 
+    Si no existe información, omite ese paso.
+
+    - Tabla:
+    {csv_text}
+
+    - Contexto de la empresa:
+    {json.dumps(contextJSON, indent=2, ensure_ascii=False)}
+    """
+
+    print("Regenerando observación...")
+    run, messages, msg_inicial = generateObservation(prompt)
+    if run is None or run.status != "completed":
+        raise HTTPException(status_code=500, detail="No se logró completar la respuesta de IA.")
+    
+    new_observation = "Error: no se completó la respuesta"
+    for msg in reversed(messages.data):
+        if msg.role == "assistant":
+            new_observation = msg.content[0].text.value.replace("Santiago","Disponibles")
+            break
+    print("Observación generada:", new_observation)
+
+    # Retornar la nueva observación
+    return {
+        "pageNumber": pageNumber,
+        "newObservation": new_observation
+    }
+
+@app.post("/apply-observations")
+async def apply_observations(
+    company: str = Form(...),
+    week: str = Form(...),
+    pdfName: str = Form(...),
+    obsJSON: str = Form(...)
+):
+    """
+    Recibe una lista de observaciones (con pageNumber, observation, excluded) en formato JSON (obsJSON)
+    y las inserta en el PDF, retornando la URL final del PDF para descargar.
+    """
+    try:
+        obsList = json.loads(obsJSON)  # convertir el string JSON a lista
+    except Exception:
+        raise HTTPException(status_code=400, detail="obsJSON no es un JSON válido")
+
+    # Localizar la carpeta / PDF
+    base_path = buildFolder(company, week)
+    dest_pdf_path = os.path.join(base_path, f"{company}_{week}.pdf")
+    if not os.path.exists(dest_pdf_path):
+        raise HTTPException(status_code=404, detail="No se encontró el PDF base.")
+
+    # Cargar la configuración (puede que la necesites, o no)
+    config_path = os.path.join(base_path, "config.json")
+    excludes = getExcludes(config_path)
+
+    # Cargar metadata / riesgo
+    metadataPath = os.path.join(base_path, '..', 'metadata.json')
+    if not os.path.exists(metadataPath):
+        metadata = getMetadata(company)
+        with open(metadataPath, 'w', encoding='utf-8') as file:
+            json.dump(metadata, file, indent=4, ensure_ascii=False)
+
+    if company == 'enex':
+        riesgo = getMetas(metadataPath)
+    else:
+        riesgo = getRiesgo(metadataPath)
+
+    # Instanciamos el ReportGenerator
+    output_pdf_name = f"{pdfName}_output.pdf"
+    reportGen = ReportGenerator(company, week, company, excludes, riesgo, output_pdf_name)
+    # En este caso, ya no generamos observaciones nuevas. Solo aplicamos las que mandó el frontend.
+    reportGen.applyObservations(obsList)
+
+    # Copiamos el PDF final a UPLOAD_DIR
+    public_pdf_path = os.path.join(UPLOAD_DIR, output_pdf_name)
+    finalPDFPath = os.path.join(base_path, output_pdf_name)
+    if not os.path.exists(finalPDFPath):
+        raise HTTPException(status_code=500, detail="No se generó el PDF final.")
+    shutil.copy2(finalPDFPath, public_pdf_path)
+
+    final_pdf_url = f"http://localhost:8000/uploads/{output_pdf_name}"
+    return {"final_pdf_url": final_pdf_url}
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

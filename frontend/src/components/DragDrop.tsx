@@ -3,6 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 import Button from '../components/Button';
 import { FileUp } from 'lucide-react';
+import { HandHelping } from 'lucide-react';
 
 interface DragDropProps {
   onFileAccepted: (url: string) => void;
@@ -43,11 +44,11 @@ const DragDrop: React.FC<DragDropProps> = ({ onFileAccepted }) => {
   return (
     <div 
       {...getRootProps()}
-      className="text-center cursor-pointer items-center justify-center flex flex-col"
+      className="text-center cursor-pointer items-center justify-center flex flex-col p-6"
     >
       <input {...getInputProps()} />
       {isDragActive ? (
-        <Button text="Suéltalo" icon={<FileUp size={20} />} className="cursor-pointer h-14" />
+        <Button text="Suéltalo aquí" icon={<HandHelping size={20} />} className="gap-2 px-15 py-4" />
       ) : (
         <div>
           <Button text="Selecciona el PDF" icon={<FileUp size={20} />} className="gap-2 px-10 py-4" />
