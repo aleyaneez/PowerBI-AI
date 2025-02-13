@@ -23,11 +23,11 @@ def getMetas(path: str) -> dict:
     config = loadJSON(path)
     return config.get("Informacion", {}).get("Metas RAEV/100", {})
 
-def getMetadata(cliente):
+def getMetadata(cliente, data):
     if cliente.lower() == "abastible_consolidado":
-        return abastibleJSON
+        return abastibleJSON(data, cliente)
     elif cliente.lower() == "albemarle":
-        return albemarleJSON
+        return albemarleJSON(data, cliente)
     elif cliente.lower() == "enex":
-        return enexJSON
+        return enexJSON(data, cliente)
     raise ValueError(f"No se encontró metadata para cliente {cliente}.")

@@ -73,7 +73,6 @@ def generateObservation(prompt):
                     outputTokens += countTokens(message.content[0].text.value)
                 except:
                     break
-            print(f'Tokens input: {promptTokens} - Tokens output: {outputTokens}')
         else:
             print(f'Error en la generación de observación: {run.last_error}')
         return run, messages, message

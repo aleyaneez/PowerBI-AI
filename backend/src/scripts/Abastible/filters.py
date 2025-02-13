@@ -7,7 +7,7 @@ from globals import RIESGO, capitalizePalabras, applyGroupEv, applyGroup, getRAE
 locale.setlocale(locale.LC_TIME, 'es_CL.UTF-8')
 
 def filterEv(df, startDate, endDate, flotas=None):
-    """
+    """ 
     1) Sin flotas => columnas [Date, raev100].
     2) Lista de flotas con >1 => [Date, flota1, flota2, ...].
     3) Lista de flotas con 1 => [Date, raev100] (solo esa flota).

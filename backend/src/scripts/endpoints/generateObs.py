@@ -2,11 +2,12 @@ import os
 import json
 import shutil
 import time
+import pandas as pd
 from fastapi import APIRouter, Form, HTTPException
 from exportCSV import CSVExporter
 from reportGenerator import ReportGenerator
 from folders import buildFolder
-from jsonUtils import getExcludes, getRiesgo, getMetas, getMetadata
+from jsonUtils import getRiesgo, getMetas, getMetadata
 from config import UPLOAD_DIR
 
 router = APIRouter()
@@ -32,35 +33,33 @@ async def generate_observations(
     shutil.copy2(tempPDF, destPDFPath)
     print(f"PDF copiado a {destPDFPath}")
 
-    # Leer config.json para extraer excludes
-    configPath = os.path.join(basePath, "config.json")
-    excludes = getExcludes(configPath)
-
+    print("Exportando CSV y PNG...")
     # Generar CSV y PNG
     exporter = CSVExporter(company, week)
     try:
-        exporter.export()
+        exporter.export(destPDFPath)
         exporter.exportPNG(destPDFPath)
     except Exception as e:
+        print(f"Error al exportar CSV: {e}")
         raise HTTPException(status_code=500, detail=f"Error al exportar CSV: {e}")
+    print("CSV y PNG generados.")
 
-    # Asegurarse de tener metadata.json
+    excludes = exporter.excludes
+
     metadataPathParent = os.path.join(basePath, '..', 'metadata.json')
     if not os.path.exists(metadataPathParent):
-        metadata = getMetadata(company)
+        data_csv = pd.read_csv(exporter.csvPath)
+        metadata = getMetadata(company, data_csv)
         with open(metadataPathParent, 'w', encoding='utf-8') as file:
             json.dump(metadata, file, indent=4, ensure_ascii=False)
     metadataPath = metadataPathParent
 
-    # Obtener riesgo
     riesgo = getMetas(metadataPath) if company == 'enex' else getRiesgo(metadataPath)
 
-    # Generar observaciones sin insertar en PDF
     outputPDFName = f"{pdfName}_output.pdf"
     reportGen = ReportGenerator(company, week, company, excludes, riesgo, outputPDFName)
     obsList = reportGen.generateObservations()
 
-    # Copiar PNGs a la carpeta uploads para exponerlas vía URL
     pngDir = os.path.join(UPLOAD_DIR, "png", company, week)
     os.makedirs(pngDir, exist_ok=True)
     if os.path.exists(exporter.outputPNG):
@@ -72,7 +71,6 @@ async def generate_observations(
     else:
         raise HTTPException(status_code=500, detail="No se encontraron imágenes PNG generadas.")
 
-    # Construir las URLs de las imágenes PNG
     pngFiles = [f for f in os.listdir(pngDir) if f.lower().endswith('.png')]
     def extract_page(filename):
         try:
